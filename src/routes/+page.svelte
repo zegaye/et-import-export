@@ -22,11 +22,21 @@
     /**
      * @param {string} category
      */
-    function chooseCategory(category) {
-        if (category === 'Cars') {
-            window.location.href = '/cars';
-        }
+   function chooseCategory(category) {
+    if (category === 'Cars') {
+        window.location.href = '/cars';
     }
+
+    if (category === 'Mobile') {
+        window.location.href = '/mobile';
+    }
+
+    if (category === 'Electronics') {
+        window.location.href = '/electronics';
+    }
+}
+                
+  
 </script>
 
 <svelte:head>
