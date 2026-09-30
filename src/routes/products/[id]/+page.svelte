@@ -9,13 +9,18 @@
 </svelte:head>
 
 <main>
-  <a class="back" href={product.direction === 'export' ? '/export' : '/import'}>
+  <a
+    class="back"
+    href={product.direction === 'export' ? '/export' : '/import'}
+  >
     ← Back to {product.direction} products
   </a>
 
   <article class="product">
     <span class="badge">{product.direction}</span>
+
     <h1>{product.name}</h1>
+
     <p class="description">{product.description}</p>
 
     <div class="facts">
@@ -23,23 +28,45 @@
         <strong>Category</strong>
         <span>{product.category}</span>
       </div>
+
       <div>
         <strong>Origin</strong>
         <span>{product.origin}</span>
       </div>
+
+      <div>
+        <strong>Quantity</strong>
+        <span>{product.quantity}</span>
+      </div>
+
+      <div>
+        <strong>Listing type</strong>
+        <span>
+          {product.isSample
+            ? 'Sample product'
+            : 'Supplier submission'}
+        </span>
+      </div>
     </div>
 
     <p class="notice">
-      This is a sample listing. Availability, specifications, and prices
-      must be confirmed before an order.
+      {#if product.isSample}
+        This is a sample listing.
+      {:else}
+        This supplier submission has been approved for publication.
+      {/if}
+      Availability, specifications, and prices must be confirmed before
+      an order.
     </p>
 
-    <a class="button" href={`/contact?product=${encodeURIComponent(product.name)}`}>
+    <a
+      class="button"
+      href={`/contact?product=${encodeURIComponent(product.name)}`}
+    >
       Request information about this product
     </a>
   </article>
 </main>
-
 <style>
   :global(body) {
     margin: 0;

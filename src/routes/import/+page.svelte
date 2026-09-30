@@ -83,8 +83,12 @@
           <p>Origin: {product.origin}</p>
           <p>Quantity: {product.quantity}</p>
           <p>{product.description}</p>
+          <a href={`/products/${product.id}`}>View details →</a>
+
           <a href={`/contact?product=${encodeURIComponent(product.product_name)}`}>
+
             Request information →
+
           </a>
         </div>
       </article>
@@ -256,10 +260,12 @@
   }
 
   .details a {
-    color: #146b4c;
-    font-weight: 700;
-    text-decoration: none;
-  }
+  display: block;
+  margin-top: 12px;
+  color: #146b4c;
+  font-weight: 700;
+  text-decoration: none;
+}
 
   .sr-only {
     position: absolute;
