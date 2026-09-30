@@ -13,8 +13,8 @@
   onMount(() => {
     product = new URLSearchParams(window.location.search).get('product') ?? '';
   });
-
-  function prepareWhatsApp(event) {
+/** @param {SubmitEvent} event */
+function prepareWhatsApp(event) {
     event.preventDefault();
 
     const text = [

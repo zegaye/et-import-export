@@ -1,12 +1,12 @@
 import { fail } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 import { createClient } from '@supabase/supabase-js';
-
+/** @type {import('./$types').Actions} */
 export const actions = {
   default: async ({ request }) => {
     const data = await request.formData();
-
-    const submission = {
+/** @type {Record<string, string>} */
+          const submission = {
       seller_name: String(data.get('sellerName') ?? '').trim(),
       phone: String(data.get('phone') ?? '').trim(),
       product_name: String(data.get('productName') ?? '').trim(),
