@@ -36,7 +36,7 @@
 <div class="page">
   <header>
     <a class="logo" href="/">ET <span>Import Export</span></a>
-    <nav>
+        <nav>
       <a href="/">Home</a>
       <a href="/contact">Contact us</a>
     </nav>
