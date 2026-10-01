@@ -20,6 +20,11 @@ function createDatabaseClient() {
   );
 }
 
+/** @param {string} id */
+function isValidId(id) {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+}
+
 /** @type {import('./$types').PageServerLoad} */
 export async function load(event) {
   event.setHeaders({ 'cache-control': 'private, no-store' });
@@ -80,12 +85,9 @@ export const actions = {
 
     const form = await event.request.formData();
     const id = String(form.get('id') ?? '').trim();
-    const status = String(form.get('status') ?? '');
+    const status = String(form.get('status') ?? '').trim();
 
-    const validId =
-      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
-
-    if (!validId || !['approved', 'rejected'].includes(status)) {
+    if (!isValidId(id) || !['approved', 'rejected'].includes(status)) {
       return fail(400, {
         success: false,
         message: 'Invalid product review request.'
@@ -125,6 +127,7 @@ export const actions = {
           : 'Product rejected. It will remain hidden from public listings.'
     };
   },
+
   edit: async (event) => {
     await requireAdmin(event);
 
@@ -148,9 +151,6 @@ export const actions = {
       description: read('description')
     };
 
-    const validId =
-      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
-
     const fields = [
       { value: values.product_name, limit: 100 },
       { value: values.category, limit: 80 },
@@ -164,7 +164,7 @@ export const actions = {
     );
 
     if (
-      !validId ||
+      !isValidId(id) ||
       invalidField ||
       !['export', 'import'].includes(values.direction) ||
       !['pending', 'approved', 'rejected'].includes(previousStatus)
@@ -222,10 +222,7 @@ export const actions = {
     const form = await event.request.formData();
     const id = String(form.get('id') ?? '').trim();
 
-    const validId =
-      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
-
-    if (!validId) {
+    if (!isValidId(id)) {
       return fail(400, {
         success: false,
         message: 'Invalid product request.'

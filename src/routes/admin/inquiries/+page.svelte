@@ -179,9 +179,34 @@
             <h4>Requirements</h4>
             <p>{inquiry.message}</p>
           </div>
+<form method="POST" action="?/saveNotes" class="notes-form">
+  <input type="hidden" name="id" value={inquiry.id} />
 
+  <input
+    type="hidden"
+    name="previousNotes"
+    value={inquiry.internal_notes ?? ''}
+  />
+
+  <label>
+    Private follow-up notes
+    <textarea
+      name="notes"
+      rows="5"
+      maxlength="5000"
+      placeholder="Record conversations, agreed requirements, and the next action..."
+      value={form?.noteId === inquiry.id
+        ? form?.notes ?? inquiry.internal_notes ?? ''
+        : inquiry.internal_notes ?? ''}
+    ></textarea>
+  </label>
+
+  <p>For your admin team. These notes are not shown on public pages.</p>
+
+  <button type="submit">Save notes</button>
+</form>
           <form method="POST" action="?/updateStatus" class="status-form">
-            <input type="hidden" name="id" value={inquiry.id} />
+                 <input type="hidden" name="id" value={inquiry.id} />
             <input
               type="hidden"
               name="previousStatus"
@@ -516,5 +541,43 @@
     .inquiry-heading {
       flex-wrap: wrap;
     }
-  }
+  }.notes-form {
+  display: grid;
+  gap: 12px;
+  margin-top: 24px;
+  padding: 20px;
+  border: 1px solid #dde7df;
+  border-radius: 10px;
+  background: #f5f8f5;
+}
+
+.notes-form textarea {
+  width: 100%;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid #cbd9cf;
+  border-radius: 8px;
+  background: white;
+  color: #173d32;
+  font: inherit;
+  font-weight: 400;
+  line-height: 1.6;
+  resize: vertical;
+}
+
+.notes-form textarea:focus {
+  outline: 2px solid #55a87c;
+  outline-offset: 3px;
+}
+
+.notes-form p {
+  margin: 0;
+  color: #68786e;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.notes-form button {
+  justify-self: start;
+}
 </style>
