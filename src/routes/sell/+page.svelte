@@ -27,7 +27,7 @@
         <p class="note" role="alert">{form.message}</p>
       {/if}
 
-      <form method="POST">
+      <form method="POST" enctype="multipart/form-data">
         <label>
           Your name or business name
           <input name="sellerName" required maxlength="100" />
@@ -88,6 +88,15 @@
         </label>
 
         <button type="submit">Submit for review →</button>
+        <label>
+  Product photo (optional)
+  <input
+    name="photo"
+    type="file"
+    accept="image/jpeg,image/png"
+  />
+  <small>Choose a JPG or PNG image no larger than 2 MB.</small>
+</label>
       </form>
 
       <p class="note">

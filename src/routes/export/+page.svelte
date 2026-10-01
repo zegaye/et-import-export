@@ -77,7 +77,17 @@
   <div class="grid">
     {#each approvedResults as product (product.id)}
       <article>
-        <div class="visual">{product.product_name.slice(0, 1)}</div>
+        <div class="visual">
+  {#if product.imageUrl}
+    <img
+      src={product.imageUrl}
+      alt={product.product_name}
+      loading="lazy"
+    />
+  {:else}
+    {product.product_name.slice(0, 1)}
+  {/if}
+</div>
         <div class="details">
           <span>{product.category.toUpperCase()}</span>
           <h3>{product.product_name}</h3>
@@ -120,7 +130,6 @@
     </div>
   </main>
 </div>
-
 <style>
   :global(body) {
     margin: 0;
@@ -290,5 +299,15 @@
     .grid {
       grid-template-columns: 1fr;
     }
-  }
+  }.visual {
+  position: relative;
+}
+
+.visual img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
 </style>

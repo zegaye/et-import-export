@@ -117,25 +117,46 @@
         {#each results as product (product.id)}
           <article>
             <div class="product-heading">
-              <div>
-                <span class="direction">
-                  {product.direction === 'export'
-                    ? 'EXPORT FROM ETHIOPIA'
-                    : 'IMPORT INTO ETHIOPIA'}
-                </span>
+  <div>
+    <span class="direction">
+      {product.direction === 'export'
+        ? 'EXPORT FROM ETHIOPIA'
+        : 'IMPORT INTO ETHIOPIA'}
+    </span>
 
-                <h3>{product.product_name}</h3>
-              </div>
+    <h3>{product.product_name}</h3>
+  </div>
 
-              <span
-                class="badge"
-                class:approved={product.status === 'approved'}
-                class:rejected={product.status === 'rejected'}
-              >
-                {product.status}
-              </span>
-            </div>
+  <span
+    class="badge"
+    class:approved={product.status === 'approved'}
+    class:rejected={product.status === 'rejected'}
+  >
+    {product.status}
+  </span>
+</div>
 
+{#if product.imageUrl}
+  <a
+    class="photo-preview"
+    href={product.imageUrl}
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    <img
+      src={product.imageUrl}
+      alt={product.product_name}
+      loading="lazy"
+    />
+    <span>Open full photo ↗</span>
+  </a>
+{:else if product.imageError}
+  <p class="photo-note">
+    Photo unavailable. Refresh the page to try again.
+  </p>
+{:else}
+  <p class="photo-note">No photo submitted.</p>
+{/if}
             <dl>
               <div>
                 <dt>Supplier</dt>
@@ -498,5 +519,31 @@
     article {
       padding: 18px;
     }
-  }
+  }.photo-preview {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 100%;
+  margin: 12px 0;
+  color: #146b4c;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.photo-preview img {
+  display: block;
+  width: 240px;
+  max-width: 100%;
+  height: 180px;
+  object-fit: contain;
+  border: 1px solid #dde6df;
+  border-radius: 10px;
+  background: #f5f7f5;
+}
+
+.photo-note {
+  color: #68786e;
+  font-size: 14px;
+}
 </style>

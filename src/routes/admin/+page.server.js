@@ -30,7 +30,7 @@ export async function load(event) {
   const { data: submissions, error: databaseError } = await database
     .from('product_submissions')
     .select(
-      'id, seller_name, phone, product_name, direction, category, origin, quantity, description, status, created_at'
+      'id, seller_name, phone, product_name, direction, category, origin, quantity, description, status, created_at, image_path'
     )
     .order('created_at', { ascending: false })
     .limit(100);
@@ -40,9 +40,36 @@ export async function load(event) {
     error(500, 'Unable to load product submissions.');
   }
 
+  const submissionsWithPhotos = await Promise.all(
+    (submissions ?? []).map(async (submission) => {
+      let imageUrl = '';
+      let imageError = false;
+
+      if (submission.image_path) {
+        const { data: photo, error: photoError } = await database.storage
+          .from('product-photos')
+          .createSignedUrl(submission.image_path, 3600);
+
+        if (photoError) {
+          console.error('Admin photo error:', photoError.message);
+          imageError = true;
+        } else {
+          imageUrl = photo?.signedUrl ?? '';
+          imageError = !imageUrl;
+        }
+      }
+
+      return {
+        ...submission,
+        imageUrl,
+        imageError
+      };
+    })
+  );
+
   return {
     email: user.email,
-    submissions: submissions ?? []
+    submissions: submissionsWithPhotos
   };
 }
 

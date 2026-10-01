@@ -18,8 +18,14 @@
 
   <article class="product">
     <span class="badge">{product.direction}</span>
-
-    <h1>{product.name}</h1>
+<h1>{product.name}</h1>
+{#if product.imageUrl}
+  <img
+    class="product-photo"
+    src={product.imageUrl}
+    alt={product.name}
+  />
+{/if}
 
     <p class="description">{product.description}</p>
 
@@ -165,5 +171,14 @@
     .facts {
       grid-template-columns: 1fr;
     }
-  }
+  }.product-photo {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 420px;
+  object-fit: contain;
+  margin: 24px 0;
+  border-radius: 12px;
+  background: #f6f8f3;
+}
 </style>

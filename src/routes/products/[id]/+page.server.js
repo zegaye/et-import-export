@@ -7,7 +7,6 @@ import { products } from '$lib/data/products.js';
 export async function load({ params, setHeaders }) {
   setHeaders({ 'cache-control': 'private, no-store' });
 
-  // Keep the existing sample products working.
   const sample = products.find((item) => item.id === params.id);
 
   if (sample) {
@@ -20,12 +19,12 @@ export async function load({ params, setHeaders }) {
         origin: sample.origin,
         description: sample.description || 'No description provided.',
         quantity: 'Confirm with our team',
-        isSample: true
+        isSample: true,
+        imageUrl: ''
       }
     };
   }
 
-  // Supplier submissions use UUID identifiers.
   const validId =
     /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
       params.id
@@ -50,12 +49,11 @@ export async function load({ params, setHeaders }) {
     }
   );
 
-  // Only approved products can be viewed publicly.
-  // Supplier names and phone numbers are not returned.
+  // Only approved listings are available publicly.
   const { data: listing, error: databaseError } = await database
     .from('product_submissions')
     .select(
-      'id, product_name, direction, category, origin, quantity, description'
+      'id, product_name, direction, category, origin, quantity, description, image_path'
     )
     .eq('id', params.id)
     .eq('status', 'approved')
@@ -70,6 +68,20 @@ export async function load({ params, setHeaders }) {
     error(404, 'Product not found');
   }
 
+  let imageUrl = '';
+
+  if (listing.image_path) {
+    const { data: photo, error: photoError } = await database.storage
+      .from('product-photos')
+      .createSignedUrl(listing.image_path, 3600);
+
+    if (photoError) {
+      console.error('Product photo error:', photoError.message);
+    } else {
+      imageUrl = photo?.signedUrl ?? '';
+    }
+  }
+
   return {
     product: {
       id: listing.id,
@@ -79,7 +91,8 @@ export async function load({ params, setHeaders }) {
       origin: listing.origin,
       quantity: listing.quantity || 'Confirm with our team',
       description: listing.description || 'No description provided.',
-      isSample: false
+      isSample: false,
+      imageUrl
     }
   };
 }
