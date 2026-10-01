@@ -1,7 +1,7 @@
 <script>
   let { data, form } = $props();
 
-  let selectedStatus = $state('pending');
+  let selectedStatus = $state('all');
   let search = $state('');
 
   let results = $derived(
@@ -189,7 +189,121 @@
             <p class="description">
               {product.description || 'No description provided.'}
             </p>
+<details class="edit-panel" open={form?.editId === product.id}>
+  <summary>Edit product</summary>
 
+  <form method="POST" action="?/edit" class="edit-form">
+    <input type="hidden" name="id" value={product.id} />
+    <input
+      type="hidden"
+      name="previousStatus"
+      value={product.status}
+    />
+
+    <div class="edit-fields">
+      <label>
+        Product name
+        <input
+          name="product_name"
+          value={form?.editId === product.id
+            ? form?.values?.product_name ?? product.product_name
+            : product.product_name}
+          required
+          maxlength="100"
+        />
+      </label>
+
+      <label>
+        Trade direction
+        <select
+          name="direction"
+          value={form?.editId === product.id
+            ? form?.values?.direction ?? product.direction
+            : product.direction}
+          required
+        >
+          <option value="export">Export from Ethiopia</option>
+          <option value="import">Import into Ethiopia</option>
+        </select>
+      </label>
+
+      <label>
+        Category
+        <input
+          name="category"
+          value={form?.editId === product.id
+            ? form?.values?.category ?? product.category
+            : product.category}
+          required
+          maxlength="80"
+        />
+      </label>
+
+      <label>
+        Location or origin
+        <input
+          name="origin"
+          value={form?.editId === product.id
+            ? form?.values?.origin ?? product.origin
+            : product.origin}
+          required
+          maxlength="100"
+        />
+      </label>
+
+      <label>
+        Available quantity
+        <input
+          name="quantity"
+          value={form?.editId === product.id
+            ? form?.values?.quantity ?? product.quantity
+            : product.quantity}
+          required
+          maxlength="80"
+        />
+      </label>
+
+      <label class="edit-wide">
+        Description
+        <textarea
+          name="description"
+          value={form?.editId === product.id
+            ? form?.values?.description ?? product.description
+            : product.description}
+          required
+          maxlength="2000"
+          rows="5"
+        ></textarea>
+      </label>
+    </div>
+
+    <p class="edit-note">
+      {product.status === 'approved'
+        ? 'Saving changes updates this public listing immediately.'
+        : 'Saving changes keeps this product hidden from public listings.'}
+    </p>
+
+    <button class="approve-button" type="submit">
+      Save product changes
+    </button>
+  </form>
+</details>
+
+{#if product.status === 'approved'}
+  <div class="unpublish-panel">
+    <p>
+      Unpublish this product when it is unavailable. It will return to
+      Pending review and can be approved again later.
+    </p>
+
+    <form method="POST" action="?/unpublish">
+      <input type="hidden" name="id" value={product.id} />
+      <button class="reject-button" type="submit">
+        Unpublish product
+      </button>
+    </form>
+  </div>
+{/if}
             {#if product.status === 'pending'}
               <form class="actions" method="POST" action="?/review">
                 <input type="hidden" name="id" value={product.id} />
@@ -547,5 +661,68 @@
 .photo-note {
   color: #68786e;
   font-size: 14px;
-}
+}  .edit-panel {
+    margin-top: 24px;
+    padding: 18px;
+    border: 1px solid #cbd8ce;
+    border-radius: 10px;
+    background: #f7faf7;
+  }
+
+  .edit-panel summary {
+    color: #146b4c;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .edit-form {
+    margin-top: 20px;
+  }
+
+  .edit-fields {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+  }
+
+  .edit-wide {
+    grid-column: 1 / -1;
+  }
+
+  .edit-fields input,
+  .edit-fields select,
+  .edit-fields textarea {
+    width: 100%;
+    min-width: 0;
+    padding: 12px;
+    border: 1px solid #cbd8ce;
+    border-radius: 8px;
+    background: white;
+    color: #173d32;
+    font: inherit;
+    font-weight: 400;
+  }
+
+  .edit-fields textarea {
+    resize: vertical;
+  }
+
+  .edit-note,
+  .unpublish-panel p {
+    color: #68786e;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .unpublish-panel {
+    margin-top: 22px;
+    padding-top: 18px;
+    border-top: 1px solid #dde6df;
+  }
+
+  @media (max-width: 650px) {
+    .edit-fields {
+      grid-template-columns: 1fr;
+    }
+  }
 </style>
