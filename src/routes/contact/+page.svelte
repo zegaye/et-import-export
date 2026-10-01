@@ -1,39 +1,12 @@
 <script>
   import { onMount } from 'svelte';
 
+  let { form } = $props();
   let product = $state('');
-  let name = $state('');
-  let company = $state('');
-  let email = $state('');
-  let phone = $state('');
-  let inquiryType = $state('Buying / sourcing');
-  let quantity = $state('');
-  let message = $state('');
 
   onMount(() => {
     product = new URLSearchParams(window.location.search).get('product') ?? '';
   });
-/** @param {SubmitEvent} event */
-function prepareWhatsApp(event) {
-    event.preventDefault();
-
-    const text = [
-      'ET Import Export inquiry',
-      '',
-      `Inquiry type: ${inquiryType}`,
-      `Product: ${product || 'General inquiry'}`,
-      `Name: ${name}`,
-      `Company: ${company || 'Not provided'}`,
-      `Email: ${email}`,
-      `Phone: ${phone}`,
-      `Quantity: ${quantity || 'Not specified'}`,
-      '',
-      `Message: ${message}`
-    ].join('\n');
-
-    window.location.href =
-      `https://wa.me/251911377969?text=${encodeURIComponent(text)}`;
-  }
 </script>
 
 <svelte:head>
@@ -64,118 +37,158 @@ function prepareWhatsApp(event) {
       <h1>Tell us what you need</h1>
       <p>
         Ask about an export product, an import requirement, or a sourcing
-        opportunity. Share the details and continue to WhatsApp to send
-        your inquiry to the Ethioz team.
+        opportunity. Submit your requirements and our team will follow up.
+        You can also continue the conversation on WhatsApp.
       </p>
     </section>
 
     <section class="contact-grid">
       <div class="form-card">
-        <div class="card-heading">
-          <span class="eyebrow">TRADE INQUIRY</span>
-          <h2>Send your requirements</h2>
-          <p>Fields marked * are required.</p>
-        </div>
+        {#if form?.success}
+          <div class="success-panel">
+            <span class="eyebrow">INQUIRY RECEIVED</span>
+            <h2>Thank you for contacting us</h2>
+            <p class="feedback success" role="status">
+              {form.message}
+            </p>
 
-        <form onsubmit={prepareWhatsApp}>
-          <div class="fields">
-            <label>
-              Full name *
-              <input
-                type="text"
-                bind:value={name}
-                maxlength="100"
-                autocomplete="name"
-                required
-                placeholder="Your full name"
-              />
-            </label>
+            {#if form.whatsappUrl}
+              <a class="button" href={form.whatsappUrl}>
+                Continue to WhatsApp →
+              </a>
+              <p class="form-note">
+                Your inquiry is already saved. This optional link prepares
+                a WhatsApp message. Press Send in WhatsApp to send it.
+              </p>
+            {/if}
 
-            <label>
-              Company
-              <input
-                type="text"
-                bind:value={company}
-                maxlength="120"
-                autocomplete="organization"
-                placeholder="Your company or organization"
-              />
-            </label>
-
-            <label>
-              Email address *
-              <input
-                type="email"
-                bind:value={email}
-                maxlength="150"
-                autocomplete="email"
-                required
-                placeholder="you@example.com"
-              />
-            </label>
-
-            <label>
-              Phone number *
-              <input
-                type="tel"
-                bind:value={phone}
-                maxlength="30"
-                autocomplete="tel"
-                required
-                placeholder="+251..."
-              />
-            </label>
-
-            <label>
-              Inquiry type *
-              <select bind:value={inquiryType} required>
-                <option value="Buying / sourcing">Buying / sourcing</option>
-                <option value="Selling / supplier">Selling / supplier</option>
-                <option value="Import inquiry">Import inquiry</option>
-                <option value="Export inquiry">Export inquiry</option>
-                <option value="General question">General question</option>
-              </select>
-            </label>
-
-            <label>
-              Product or service
-              <input
-                type="text"
-                bind:value={product}
-                maxlength="120"
-                placeholder="For example, Ethiopian coffee"
-              />
-            </label>
-
-            <label class="wide">
-              Quantity needed or available
-              <input
-                type="text"
-                bind:value={quantity}
-                maxlength="80"
-                placeholder="For example, 10 tonnes or 100 units"
-              />
-            </label>
-
-            <label class="wide">
-              Tell us more *
-              <textarea
-                bind:value={message}
-                maxlength="2000"
-                rows="6"
-                required
-                placeholder="Include specifications, destination, timing, and any questions."
-              ></textarea>
-            </label>
+            <a class="new-inquiry" href="/contact">
+              Submit another inquiry →
+            </a>
+          </div>
+        {:else}
+          <div class="card-heading">
+            <span class="eyebrow">TRADE INQUIRY</span>
+            <h2>Send your requirements</h2>
+            <p>Fields marked * are required.</p>
           </div>
 
-          <button type="submit">Continue to WhatsApp →</button>
+          {#if form?.message}
+            <p class="feedback" role="alert">{form.message}</p>
+          {/if}
 
-          <p class="form-note">
-            This button prepares a WhatsApp message. Your inquiry is sent
-            only after you press Send in WhatsApp.
-          </p>
-        </form>
+          <form method="POST">
+            <div class="fields">
+              <label>
+                Full name *
+                <input
+                  name="name"
+                  type="text"
+                  value={form?.values?.name ?? ''}
+                  maxlength="100"
+                  autocomplete="name"
+                  required
+                  placeholder="Your full name"
+                />
+              </label>
+
+              <label>
+                Company
+                <input
+                  name="company"
+                  type="text"
+                  value={form?.values?.company ?? ''}
+                  maxlength="120"
+                  autocomplete="organization"
+                  placeholder="Your company or organization"
+                />
+              </label>
+
+              <label>
+                Email address *
+                <input
+                  name="email"
+                  type="email"
+                  value={form?.values?.email ?? ''}
+                  maxlength="150"
+                  autocomplete="email"
+                  required
+                  placeholder="you@example.com"
+                />
+              </label>
+
+              <label>
+                Phone number *
+                <input
+                  name="phone"
+                  type="tel"
+                  value={form?.values?.phone ?? ''}
+                  maxlength="30"
+                  autocomplete="tel"
+                  required
+                  placeholder="+251..."
+                />
+              </label>
+
+              <label>
+                Inquiry type *
+                <select
+                  name="inquiryType"
+                  value={form?.values?.inquiryType ?? 'Buying / sourcing'}
+                  required
+                >
+                  <option value="Buying / sourcing">Buying / sourcing</option>
+                  <option value="Selling / supplier">Selling / supplier</option>
+                  <option value="Import inquiry">Import inquiry</option>
+                  <option value="Export inquiry">Export inquiry</option>
+                  <option value="General question">General question</option>
+                </select>
+              </label>
+
+              <label>
+                Product or service
+                <input
+                  name="product"
+                  type="text"
+                  value={form?.values?.product ?? product}
+                  maxlength="120"
+                  placeholder="For example, Ethiopian coffee"
+                />
+              </label>
+
+              <label class="wide">
+                Quantity needed or available
+                <input
+                  name="quantity"
+                  type="text"
+                  value={form?.values?.quantity ?? ''}
+                  maxlength="80"
+                  placeholder="For example, 10 tonnes or 100 units"
+                />
+              </label>
+
+              <label class="wide">
+                Tell us more *
+                <textarea
+                  name="message"
+                  value={form?.values?.message ?? ''}
+                  maxlength="2000"
+                  rows="6"
+                  required
+                  placeholder="Include specifications, destination, timing, and any questions."
+                ></textarea>
+              </label>
+            </div>
+
+            <button type="submit">Submit inquiry →</button>
+
+            <p class="form-note">
+              We will save your inquiry and contact details so our team can
+              respond to your request. After submitting, you can optionally
+              continue on WhatsApp.
+            </p>
+          </form>
+        {/if}
       </div>
 
       <aside class="info-card">
@@ -307,7 +320,7 @@ function prepareWhatsApp(event) {
 
   .contact-grid {
     display: grid;
-    grid-template-columns: 1.5fr 0.8fr;
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 0.8fr);
     align-items: start;
     gap: 24px;
     margin-top: -38px;
@@ -316,6 +329,7 @@ function prepareWhatsApp(event) {
 
   .form-card,
   .info-card {
+    min-width: 0;
     padding: 32px;
     border: 1px solid #d9e7dd;
     border-radius: 16px;
@@ -324,6 +338,7 @@ function prepareWhatsApp(event) {
   }
 
   .card-heading .eyebrow,
+  .success-panel .eyebrow,
   .info-card .eyebrow {
     color: #16815d;
   }
@@ -342,7 +357,7 @@ function prepareWhatsApp(event) {
 
   .fields {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: 19px;
     margin-top: 26px;
   }
@@ -364,6 +379,7 @@ function prepareWhatsApp(event) {
   select,
   textarea {
     width: 100%;
+    min-width: 0;
     padding: 13px 14px;
     border: 1px solid #cbd9cf;
     border-radius: 8px;
@@ -384,7 +400,9 @@ function prepareWhatsApp(event) {
     resize: vertical;
   }
 
-  button {
+  button,
+  .button {
+    display: block;
     width: 100%;
     margin-top: 25px;
     padding: 16px;
@@ -394,10 +412,13 @@ function prepareWhatsApp(event) {
     color: white;
     font: inherit;
     font-weight: 700;
+    text-align: center;
+    text-decoration: none;
     cursor: pointer;
   }
 
-  button:hover {
+  button:hover,
+  .button:hover {
     background: #104a36;
   }
 
@@ -406,6 +427,29 @@ function prepareWhatsApp(event) {
     color: #66776d;
     font-size: 12px;
     line-height: 1.5;
+  }
+
+  .feedback {
+    margin: 20px 0;
+    padding: 16px;
+    border-left: 4px solid #b48b35;
+    border-radius: 6px;
+    background: #fff8e8;
+    color: #604d22;
+    line-height: 1.6;
+  }
+
+  .feedback.success {
+    border-color: #16815d;
+    background: #e8f5ec;
+    color: #175439;
+  }
+
+  .new-inquiry {
+    display: inline-block;
+    margin-top: 24px;
+    color: #176347;
+    font-weight: 700;
   }
 
   .info-card a,

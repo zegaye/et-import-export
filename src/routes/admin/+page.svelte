@@ -51,7 +51,9 @@
     <section class="intro">
       <span>PRODUCT MANAGEMENT</span>
       <h1>Admin dashboard</h1>
-      <p>Review supplier submissions before publishing them.</p>
+<p>
+  <a href="/admin/inquiries">View buyer inquiries →</a>
+</p>      <p>Review supplier submissions before publishing them.</p>
       <p class="account">Signed in as {data.email}</p>
     </section>
 
