@@ -3,25 +3,56 @@
 
   let { data } = $props();
   let search = $state('');
+  let selectedCategory = $state('');
 
   const products = allProducts.filter(
     (product) => product.direction === 'import'
   );
 
+  let approvedProducts = $derived(data.approvedProducts ?? []);
+
+  let categories = $derived(
+    [
+      ...new Set(
+        [...approvedProducts, ...products]
+          .map((product) => (product.category ?? '').trim().toLowerCase())
+          .filter(Boolean)
+      )
+    ].sort()
+  );
+
+  let searchTerm = $derived(search.toLowerCase().trim());
+
   let approvedResults = $derived(
-    data.approvedProducts.filter((product) =>
-      `${product.product_name} ${product.category} ${product.origin}`
-        .toLowerCase()
-        .includes(search.toLowerCase().trim())
-    )
+    approvedProducts.filter((product) => {
+      const category = (product.category ?? '').trim().toLowerCase();
+
+      const matchesCategory =
+        selectedCategory === '' || category === selectedCategory;
+
+      const matchesSearch =
+        `${product.product_name} ${product.category} ${product.origin}`
+          .toLowerCase()
+          .includes(searchTerm);
+
+      return matchesCategory && matchesSearch;
+    })
   );
 
   let results = $derived(
-    products.filter((product) =>
-      `${product.name} ${product.category}`
-        .toLowerCase()
-        .includes(search.toLowerCase().trim())
-    )
+    products.filter((product) => {
+      const category = (product.category ?? '').trim().toLowerCase();
+
+      const matchesCategory =
+        selectedCategory === '' || category === selectedCategory;
+
+      const matchesSearch =
+        `${product.name} ${product.category} ${product.origin}`
+          .toLowerCase()
+          .includes(searchTerm);
+
+      return matchesCategory && matchesSearch;
+    })
   );
 </script>
 
@@ -57,14 +88,39 @@
         <p>These are sample products while supplier listings are being developed.</p>
       </div>
 
-      <label>
-        <span class="sr-only">Search import products</span>
-        <input
-          type="search"
-          placeholder="Search import products..."
-          bind:value={search}
-        />
-      </label>
+      <div class="filters">
+  <label>
+    <span class="sr-only">Search import products</span>
+    <input
+      type="search"
+      placeholder="Search import products..."
+      bind:value={search}
+    />
+  </label>
+
+  <label>
+    <span class="sr-only">Filter by category</span>
+    <select bind:value={selectedCategory}>
+      <option value="">All categories</option>
+
+      {#each categories as category (category)}
+        <option value={category}>
+          {category.charAt(0).toUpperCase() + category.slice(1)}
+        </option>
+      {/each}
+    </select>
+  </label>
+
+  <button
+    type="button"
+    onclick={() => {
+      search = '';
+      selectedCategory = '';
+    }}
+  >
+    Clear filters
+  </button>
+</div>
     </div>
 <h2>Approved import listings</h2>
 
@@ -308,5 +364,45 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+}.filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.filters select,
+.filters button {
+  padding: 14px;
+  border: 1px solid #cbd9ce;
+  border-radius: 8px;
+  background: white;
+  color: #173d32;
+  font: inherit;
+}
+
+.filters select {
+  min-width: 170px;
+}
+
+.filters button {
+  background: #146b4c;
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+@media (max-width: 700px) {
+  .filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filters label,
+  .filters input,
+  .filters select,
+  .filters button {
+    width: 100%;
+  }
 }
 </style>
