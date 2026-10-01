@@ -3,6 +3,7 @@
 
   let search = $state('');
   let selectedStatus = $state('all');
+  let selectedFollowUp = $state('all');
 
   let results = $derived(
     data.inquiries.filter((inquiry) => {
@@ -21,7 +22,27 @@
         .toLowerCase()
         .includes(search.toLowerCase().trim());
 
-      return matchesStatus && matchesSearch;
+      const followUpDate = inquiry.follow_up_date ?? '';
+      const isOpen = inquiry.status !== 'closed';
+
+      const matchesFollowUp =
+        selectedFollowUp === 'all' ||
+        (selectedFollowUp === 'today' &&
+          isOpen &&
+          followUpDate === data.today) ||
+        (selectedFollowUp === 'overdue' &&
+          isOpen &&
+          followUpDate !== '' &&
+          followUpDate < data.today) ||
+        (selectedFollowUp === 'upcoming' &&
+          isOpen &&
+          followUpDate !== '' &&
+          followUpDate > data.today) ||
+        (selectedFollowUp === 'unscheduled' &&
+          isOpen &&
+          followUpDate === '');
+
+      return matchesStatus && matchesSearch && matchesFollowUp;
     })
   );
 
@@ -53,6 +74,12 @@
       timeZone: 'UTC'
     }).format(new Date(`${value}T00:00:00Z`));
   }
+
+  function clearFilters() {
+    search = '';
+    selectedStatus = 'all';
+    selectedFollowUp = 'all';
+  }
 </script>
 
 <svelte:head>
@@ -82,10 +109,12 @@
       <strong>{newCount}</strong>
       <span>New</span>
     </div>
+
     <div>
       <strong>{contactedCount}</strong>
       <span>Contacted</span>
     </div>
+
     <div>
       <strong>{closedCount}</strong>
       <span>Closed</span>
@@ -106,7 +135,10 @@
     <div class="section-heading">
       <div>
         <h2 id="inquiries-heading">Received inquiries</h2>
-        <p>Showing the latest 100 inquiries. Counts refer to this list.</p>
+        <p>
+          Showing the latest 100 inquiries.
+          Counts and filters apply to this list.
+        </p>
         <p>
           Follow-up alerts use today's date in Ethiopia:
           {formatFollowUpDate(data.today)}.
@@ -118,6 +150,17 @@
     </div>
 
     <div class="filters">
+      <label>
+        Follow-up
+        <select bind:value={selectedFollowUp}>
+          <option value="all">All follow-ups</option>
+          <option value="today">Due today — open inquiries</option>
+          <option value="overdue">Overdue — open inquiries</option>
+          <option value="upcoming">Upcoming — open inquiries</option>
+          <option value="unscheduled">No date — open inquiries</option>
+        </select>
+      </label>
+
       <label>
         Status
         <select bind:value={selectedStatus}>
@@ -136,6 +179,18 @@
           placeholder="Search name, company, product, or message..."
         />
       </label>
+    </div>
+
+    <div class="filter-summary">
+      <p role="status">
+        {results.length}
+        {results.length === 1 ? 'inquiry matches' : 'inquiries match'}
+        your filters.
+      </p>
+
+      <button type="button" class="secondary" onclick={clearFilters}>
+        Clear filters
+      </button>
     </div>
 
     <div class="inquiries">
@@ -275,7 +330,9 @@
               ></textarea>
             </label>
 
-            <p>For your admin team. These notes are not shown on public pages.</p>
+            <p>
+              For your admin team. These notes are not shown on public pages.
+            </p>
 
             <button type="submit">Save notes</button>
           </form>
@@ -302,7 +359,10 @@
           </form>
         </article>
       {:else}
-        <p class="empty">No inquiries match your selected filters.</p>
+        <p class="empty">
+          No inquiries match your selected filters.
+          Try selecting All follow-ups and All statuses, or clear the filters.
+        </p>
       {/each}
     </div>
   </section>
@@ -426,9 +486,24 @@
 
   .filters {
     display: grid;
-    grid-template-columns: 180px minmax(0, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 16px;
-    margin: 24px 0;
+    margin: 24px 0 16px;
+  }
+
+  .filter-summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .filter-summary p {
+    margin: 0;
+    color: #68786e;
+    line-height: 1.6;
   }
 
   label {
@@ -587,12 +662,23 @@
     background: #104a36;
   }
 
+  .secondary {
+    border: 1px solid #cbd9cf;
+    background: white;
+    color: #176347;
+  }
+
+  .secondary:hover {
+    background: #e4f4e8;
+  }
+
   .empty {
     padding: 28px;
     border: 1px dashed #cbd9cf;
     border-radius: 12px;
     color: #68786e;
     text-align: center;
+    line-height: 1.6;
   }
 
   .notes-form,
