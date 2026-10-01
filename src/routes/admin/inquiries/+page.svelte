@@ -45,6 +45,14 @@
       timeZone: 'Africa/Addis_Ababa'
     }).format(new Date(value));
   }
+
+  /** @param {string} value */
+  function formatFollowUpDate(value) {
+    return new Intl.DateTimeFormat('en-GB', {
+      dateStyle: 'medium',
+      timeZone: 'UTC'
+    }).format(new Date(`${value}T00:00:00Z`));
+  }
 </script>
 
 <svelte:head>
@@ -64,7 +72,7 @@
 <main>
   <section class="intro">
     <span class="eyebrow">ADMIN DASHBOARD</span>
-    <h1> Buyer inquiries</h1>
+    <h1>Buyer inquiries</h1>
     <p>Signed in as {data.email}</p>
     <p>Review requests and track your team's follow-up.</p>
   </section>
@@ -99,6 +107,11 @@
       <div>
         <h2 id="inquiries-heading">Received inquiries</h2>
         <p>Showing the latest 100 inquiries. Counts refer to this list.</p>
+        <p>
+          Follow-up alerts use today's date in Ethiopia:
+          {formatFollowUpDate(data.today)}.
+          Refresh the list to update alerts.
+        </p>
       </div>
 
       <a class="refresh" href="/admin/inquiries">Refresh list</a>
@@ -132,7 +145,9 @@
             <div>
               <span class="eyebrow">{inquiry.inquiry_type}</span>
               <h3>{inquiry.product_name || 'General inquiry'}</h3>
-              <p class="date">{formatDate(inquiry.created_at)} · Ethiopia time</p>
+              <p class="date">
+                {formatDate(inquiry.created_at)} · Ethiopia time
+              </p>
             </div>
 
             <span
@@ -179,34 +194,95 @@
             <h4>Requirements</h4>
             <p>{inquiry.message}</p>
           </div>
-<form method="POST" action="?/saveNotes" class="notes-form">
-  <input type="hidden" name="id" value={inquiry.id} />
 
-  <input
-    type="hidden"
-    name="previousNotes"
-    value={inquiry.internal_notes ?? ''}
-  />
+          <div class="follow-up-panel">
+            <h4>Next follow-up</h4>
 
-  <label>
-    Private follow-up notes
-    <textarea
-      name="notes"
-      rows="5"
-      maxlength="5000"
-      placeholder="Record conversations, agreed requirements, and the next action..."
-      value={form?.noteId === inquiry.id
-        ? form?.notes ?? inquiry.internal_notes ?? ''
-        : inquiry.internal_notes ?? ''}
-    ></textarea>
-  </label>
+            {#if inquiry.follow_up_date}
+              <p class="saved-date">
+                Saved date: {formatFollowUpDate(inquiry.follow_up_date)}
+              </p>
 
-  <p>For your admin team. These notes are not shown on public pages.</p>
+              {#if inquiry.status === 'closed'}
+                <p class="follow-up-label muted">
+                  Inquiry closed — no active follow-up alert
+                </p>
+              {:else if inquiry.follow_up_date < data.today}
+                <p class="follow-up-label overdue">Overdue</p>
+              {:else if inquiry.follow_up_date === data.today}
+                <p class="follow-up-label due-today">Due today</p>
+              {:else}
+                <p class="follow-up-label upcoming">Upcoming</p>
+              {/if}
+            {:else}
+              <p class="saved-date">No follow-up date set.</p>
+            {/if}
 
-  <button type="submit">Save notes</button>
-</form>
+            <form
+              method="POST"
+              action="?/saveFollowUp"
+              class="follow-up-form"
+            >
+              <input type="hidden" name="id" value={inquiry.id} />
+
+              <input
+                type="hidden"
+                name="previousDate"
+                value={inquiry.follow_up_date ?? ''}
+              />
+
+              <label>
+                Follow-up date (Gregorian)
+                <input
+                  type="date"
+                  name="followUpDate"
+                  min="0001-01-01"
+                  max="9999-12-31"
+                  value={form?.followUpId === inquiry.id
+                    ? form?.followUpDate ?? inquiry.follow_up_date ?? ''
+                    : inquiry.follow_up_date ?? ''}
+                />
+              </label>
+
+              <button type="submit">Save follow-up date</button>
+            </form>
+
+            <p class="help">
+              Leave the date empty and save to clear it.
+              This date is for your admin team and does not send notifications.
+            </p>
+          </div>
+
+          <form method="POST" action="?/saveNotes" class="notes-form">
+            <input type="hidden" name="id" value={inquiry.id} />
+
+            <input
+              type="hidden"
+              name="previousNotes"
+              value={inquiry.internal_notes ?? ''}
+            />
+
+            <label>
+              Private follow-up notes
+              <textarea
+                name="notes"
+                rows="5"
+                maxlength="5000"
+                placeholder="Record conversations, agreed requirements, and the next action..."
+                value={form?.noteId === inquiry.id
+                  ? form?.notes ?? inquiry.internal_notes ?? ''
+                  : inquiry.internal_notes ?? ''}
+              ></textarea>
+            </label>
+
+            <p>For your admin team. These notes are not shown on public pages.</p>
+
+            <button type="submit">Save notes</button>
+          </form>
+
           <form method="POST" action="?/updateStatus" class="status-form">
-                 <input type="hidden" name="id" value={inquiry.id} />
+            <input type="hidden" name="id" value={inquiry.id} />
+
             <input
               type="hidden"
               name="previousStatus"
@@ -363,7 +439,8 @@
   }
 
   input,
-  select {
+  select,
+  textarea {
     width: 100%;
     min-width: 0;
     padding: 12px;
@@ -372,10 +449,17 @@
     background: white;
     color: #173d32;
     font: inherit;
+    font-weight: 400;
+  }
+
+  textarea {
+    line-height: 1.6;
+    resize: vertical;
   }
 
   input:focus,
   select:focus,
+  textarea:focus,
   button:focus-visible,
   a:focus-visible {
     outline: 2px solid #55a87c;
@@ -473,7 +557,8 @@
     white-space: pre-wrap;
   }
 
-  .status-form {
+  .status-form,
+  .follow-up-form {
     display: flex;
     align-items: end;
     flex-wrap: wrap;
@@ -481,8 +566,9 @@
     margin-top: 22px;
   }
 
-  .status-form label {
-    width: 190px;
+  .status-form label,
+  .follow-up-form label {
+    width: 230px;
     max-width: 100%;
   }
 
@@ -509,9 +595,73 @@
     text-align: center;
   }
 
+  .notes-form,
+  .follow-up-panel {
+    margin-top: 24px;
+    padding: 20px;
+    border: 1px solid #dde7df;
+    border-radius: 10px;
+    background: #f5f8f5;
+  }
+
+  .notes-form {
+    display: grid;
+    gap: 12px;
+  }
+
+  .notes-form p,
+  .help {
+    color: #68786e;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  .notes-form p {
+    margin: 0;
+  }
+
+  .notes-form button {
+    justify-self: start;
+  }
+
+  .saved-date {
+    color: #40584d;
+    line-height: 1.6;
+  }
+
+  .follow-up-label {
+    display: inline-block;
+    margin: 0;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .overdue {
+    background: #fde8e8;
+    color: #9b2626;
+  }
+
+  .due-today {
+    background: #fff3dc;
+    color: #725721;
+  }
+
+  .upcoming {
+    background: #e4f4e8;
+    color: #176347;
+  }
+
+  .muted {
+    background: #edf0f2;
+    color: #53616b;
+  }
+
   @media (max-width: 700px) {
     header,
-    .section-heading {
+    .section-heading,
+    .inquiry-heading {
       flex-wrap: wrap;
     }
 
@@ -538,46 +688,9 @@
       padding: 20px;
     }
 
-    .inquiry-heading {
-      flex-wrap: wrap;
+    .follow-up-form label,
+    .status-form label {
+      width: 100%;
     }
-  }.notes-form {
-  display: grid;
-  gap: 12px;
-  margin-top: 24px;
-  padding: 20px;
-  border: 1px solid #dde7df;
-  border-radius: 10px;
-  background: #f5f8f5;
-}
-
-.notes-form textarea {
-  width: 100%;
-  min-width: 0;
-  padding: 12px;
-  border: 1px solid #cbd9cf;
-  border-radius: 8px;
-  background: white;
-  color: #173d32;
-  font: inherit;
-  font-weight: 400;
-  line-height: 1.6;
-  resize: vertical;
-}
-
-.notes-form textarea:focus {
-  outline: 2px solid #55a87c;
-  outline-offset: 3px;
-}
-
-.notes-form p {
-  margin: 0;
-  color: #68786e;
-  font-size: 13px;
-  line-height: 1.6;
-}
-
-.notes-form button {
-  justify-self: start;
-}
+  }
 </style>
