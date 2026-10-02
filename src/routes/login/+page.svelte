@@ -3,14 +3,16 @@
 </script>
 
 <svelte:head>
-  <title>Admin Login | ET Import Export</title>
+  <title>Sign In | ET Import Export</title>
+  <meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
 <main>
   <section>
     <a class="brand" href="/">ET Import Export</a>
-    <h1>Admin login</h1>
-    <p>Sign in to manage supplier submissions.</p>
+
+    <h1>Sign in</h1>
+    <p>Access your supplier account or admin dashboard.</p>
 
     {#if form?.message}
       <div class="error" role="alert">{form.message}</div>

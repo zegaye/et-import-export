@@ -5,16 +5,16 @@ import { createAuthClient } from '$lib/server/auth.js';
 /** @type {import('./$types').Actions} */
 export const actions = {
   default: async (event) => {
-    if (!env.ADMIN_USER_ID) {
-      return fail(500, {
-  message: 'The admin account has not been configured.',
-  email: ''
-});
-    }
-
     const form = await event.request.formData();
-    const email = String(form.get('email') ?? '').trim();
-    const password = String(form.get('password') ?? '');
+
+    const emailValue = form.get('email');
+    const passwordValue = form.get('password');
+
+    const email =
+      typeof emailValue === 'string' ? emailValue.trim() : '';
+
+    const password =
+      typeof passwordValue === 'string' ? passwordValue : '';
 
     if (!email || !password) {
       return fail(400, {
@@ -24,28 +24,27 @@ export const actions = {
     }
 
     const supabase = createAuthClient(event);
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password
-    });
 
-    if (error || !data.user) {
-      console.error('Admin login failed:', error?.message ?? 'No user returned');
+    const { data, error: loginError } =
+      await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
+
+    if (loginError || !data.user || !data.session) {
       return fail(400, {
-        message: 'Unable to sign in. Check your email and password.',
+        message:
+          'Unable to sign in. Check your email and password, and confirm your email if you have just registered.',
         email
       });
     }
 
-    if (data.user.id !== env.ADMIN_USER_ID.trim()) {
-      await supabase.auth.signOut();
+    const adminId = env.ADMIN_USER_ID?.trim();
 
-      return fail(403, {
-        message: 'This account does not have admin access.',
-        email
-      });
+    if (adminId && data.user.id === adminId) {
+      redirect(303, '/admin');
     }
 
-    redirect(303, '/admin');
+    redirect(303, '/dashboard');
   }
 };
