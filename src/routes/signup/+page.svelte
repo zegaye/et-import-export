@@ -1,5 +1,7 @@
 <script>
   let { form } = $props();
+
+  let accountType = $state('exporter');
 </script>
 
 <svelte:head>
@@ -14,8 +16,8 @@
   <section>
     <a class="brand" href="/">ET Import Export</a>
 
-    <h1>Create your account</h1>
-    <p>Register as a supplier to get started.</p>
+    <h1>Create your trade account</h1>
+<p>Register as an Ethiopian Exporter or International Buyer.</p>
 
     {#if form?.success}
       <div class="success" role="status">
@@ -32,6 +34,17 @@
       {/if}
 
       <form method="POST">
+      <label for="accountType">Register as</label>
+
+<select
+  id="accountType"
+  name="accountType"
+  bind:value={accountType}
+  required
+>
+  <option value="exporter">Ethiopian Exporter</option>
+  <option value="buyer">International Buyer</option>
+</select>
         <label for="fullName">Your full name</label>
         <input
           id="fullName"
@@ -42,6 +55,46 @@
           value={form?.values?.fullName ?? ''}
           required
         />
+
+<label for="companyName">
+  {accountType === 'exporter'
+    ? 'Export business name'
+    : 'Buying company name'}
+</label>
+
+<input
+  id="companyName"
+  name="companyName"
+  type="text"
+  maxlength="150"
+  value={form?.values?.companyName ?? ''}
+  required
+/>
+
+<label for="country">Country</label>
+
+<input
+  id="country"
+  name="country"
+  type="text"
+  maxlength="100"
+  placeholder={accountType === 'exporter' ? 'Ethiopia' : 'Enter your country'}
+  value={form?.values?.country ?? ''}
+  required
+/>
+
+<label for="phone">Phone number</label>
+
+<input
+  id="phone"
+  name="phone"
+  type="tel"
+  autocomplete="tel"
+  maxlength="30"
+  placeholder={accountType === 'exporter' ? '+251...' : '+...'}
+  value={form?.values?.phone ?? ''}
+  required
+/>
 
         <label for="email">Email address</label>
         <input
@@ -80,8 +133,10 @@
           required
         />
 
-        <button type="submit">Create supplier account</button>
-      </form>
+<button type="submit">
+  Create {accountType === 'exporter' ? 'Exporter' : 'Buyer'} Account
+</button>
+</form>
 
       <p class="notice">
         Creating an account does not mean your business is verified.
@@ -152,7 +207,8 @@
     font-weight: 700;
   }
 
-  input {
+input,
+select {
     width: 100%;
     padding: 13px;
     box-sizing: border-box;

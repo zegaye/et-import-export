@@ -1,4 +1,5 @@
 <script>
+
   let { data, form } = $props();
 
   let selectedStatus = $state('all');
@@ -48,14 +49,29 @@
   </header>
 
   <main>
-    <section class="intro">
-      <span>PRODUCT MANAGEMENT</span>
-      <h1>Admin dashboard</h1>
-<p>
-  <a href="/admin/inquiries">View buyer inquiries →</a>
-</p>      <p>Review supplier submissions before publishing them.</p>
-      <p class="account">Signed in as {data.email}</p>
-    </section>
+   
+<section class="intro">
+  <span>PRODUCT MANAGEMENT</span>
+
+  <h1>Admin dashboard</h1>
+
+  <div class="admin-navigation">
+    <a href="/admin/inquiries">
+      <span>📩</span>
+      <span>View Buyer Inquiries →</span>
+    </a>
+
+    <a href="/admin/documents">
+      <span>📄</span>
+      <span>Exporter Document Verification →</span>
+    </a>
+  </div>
+
+  <p>Review supplier submissions before publishing them.</p>
+
+  <p class="account">Signed in as {data.email}</p>
+</section>
+
 
     <div class="stats">
       <div>
@@ -724,5 +740,43 @@
     .edit-fields {
       grid-template-columns: 1fr;
     }
+    
+.admin-navigation {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin: 24px 0;
+}
+
+.admin-navigation a {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+  background: #ffffff;
+  border: 1px solid #dde6df;
+  border-radius: 10px;
+  color: #146b4c;
+  font-weight: 700;
+  text-decoration: none;
+  transition: 0.2s ease;
+}
+
+.admin-navigation a:hover {
+  background: #e2f4e9;
+  border-color: #146b4c;
+  transform: translateY(-2px);
+}
+
+@media (max-width: 650px) {
+  .admin-navigation {
+    flex-direction: column;
+  }
+
+  .admin-navigation a {
+    width: 100%;
+  }
+}
+
   }
 </style>
