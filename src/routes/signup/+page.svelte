@@ -2,7 +2,21 @@
 <script>
   let { form } = $props();
 
-let accountType = $state('exporter');
+  let accountType = $state('exporter');
+  let selectedCountry = $state('');
+
+  $effect(() => {
+    if (form?.values?.accountType) {
+      accountType = form.values.accountType;
+    }
+  });
+
+  $effect(() => {
+    if (form?.values?.country) {
+      selectedCountry = form.values.country;
+    }
+  });
+
   let accountLabel = $derived(
     accountType === 'exporter'
       ? 'Exporter'
@@ -10,6 +24,29 @@ let accountType = $state('exporter');
         ? 'International Supplier'
         : 'Buyer'
   );
+
+  const countries = [
+    'Australia',
+    'Brazil',
+    'Canada',
+    'China',
+    'Djibouti',
+    'Ethiopia',
+    'France',
+    'Germany',
+    'India',
+    'Italy',
+    'Japan',
+    'Kenya',
+    'Netherlands',
+    'Saudi Arabia',
+    'South Africa',
+    'South Korea',
+    'Turkey',
+    'United Arab Emirates',
+    'United Kingdom',
+    'United States'
+  ];
 </script>
 
 <svelte:head>
@@ -91,6 +128,7 @@ let accountType = $state('exporter');
         </div>
 
         <label for="fullName">Your full name</label>
+
         <input
           id="fullName"
           name="fullName"
@@ -120,17 +158,34 @@ let accountType = $state('exporter');
 
         <label for="country">Country</label>
 
-        <input
-          id="country"
-          name="country"
-          type="text"
-          maxlength="100"
-          placeholder={accountType === 'exporter'
-            ? 'Ethiopia'
-            : 'Enter your country'}
-          value={form?.values?.country ?? ''}
-          required
-        />
+        {#if accountType === 'exporter'}
+          <input
+            id="country"
+            name="country"
+            type="text"
+            value="Ethiopia"
+            readonly
+            required
+          />
+          <small>
+            Ethiopian Exporter accounts are registered in Ethiopia.
+          </small>
+        {:else}
+          <select
+            id="country"
+            name="country"
+            bind:value={selectedCountry}
+            required
+          >
+            <option value="" disabled>
+              Select your country
+            </option>
+
+            {#each countries as country}
+              <option value={country}>{country}</option>
+            {/each}
+          </select>
+        {/if}
 
         <label for="phone">Phone number</label>
 
@@ -277,6 +332,11 @@ let accountType = $state('exporter');
     background: white;
     color: #173d32;
     font: inherit;
+  }
+
+  input[readonly] {
+    background: #edf6ef;
+    font-weight: 700;
   }
 
   .account-info {

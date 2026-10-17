@@ -33,7 +33,13 @@ export const actions = {
     const accountType = read('accountType').trim();
     const fullName = read('fullName').trim();
     const companyName = read('companyName').trim();
-    const country = read('country').trim();
+    const submittedCountry = read('country').trim();
+
+const country =
+  accountType === 'exporter' &&
+  submittedCountry.toLowerCase() === 'ethiopia'
+    ? 'Ethiopia'
+    : submittedCountry;
     const phone = read('phone').trim();
     const email = read('email').trim().toLowerCase();
     const password = read('password');
