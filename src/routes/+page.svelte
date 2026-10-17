@@ -106,7 +106,7 @@
 
     <nav class:open={menuOpen} aria-label="Main navigation">
 
-      <a href="/">Home</a><a href="/export">Export</a><a href="/import">Import</a><a href="/#opportunities">Opportunities</a><a href="/about">About</a><a href="/contact">Contact</a><a href="/login">Login</a><a class="nav-cta" href="/sell">List a product ↗</a>
+      <a href="/">Home</a><a href="/export">Export</a><a href="/import">Import</a><a href="/#opportunities">Opportunities</a><a href="/about">About</a><a href="/contact">Contact</a><details class="login-menu"><summary>Login ▾</summary><div class="login-options"><a href="/login">Buyer Login</a><a href="/login">Ethiopian Exporter Login</a><a href="/login">International Supplier Login</a><a href="/signup">Create an account ↗</a></div></details><a class="nav-cta" href="/sell">List a product ↗</a>
 
     </nav>
 
@@ -122,11 +122,11 @@
 
         <span class="eyebrow"><span class="live-dot"></span> ETHIOPIA · GLOBAL TRADE</span>
 
-        <h1>Local roots.<br /><span>Global reach.</span></h1>
+        <h1>From Ethiopia<br /><span>to the world.</span></h1><h2 class="hero-amharic">ከኢትዮጵያ ወደ ዓለም፣<br />ከዓለም ወደ ኢትዮጵያ!</h2>
 
-        <p>Discover Ethiopian export opportunities, source products from international markets, and start meaningful trade connections—all in one place.</p>
+        <p>Discover Ethiopian export opportunities, source products from international markets, and connect Ethiopian exporters, international buyers and international suppliers in one place.</p>
 
-        <div class="hero-actions"><a class="btn primary" href="#opportunities">Explore opportunities <span>↗</span></a><a class="btn ghost" href="/contact">Request sourcing help <span>→</span></a></div>
+        <p class="hero-amharic-desc">የኢትዮጵያ ላኪዎችን፣ ዓለም አቀፍ ገዢዎችን እና የውጭ አገር አቅራቢዎችን የሚያገናኝ ዲጂታል የንግድ መድረክ።</p><div class="hero-actions"><a class="btn primary" href="#opportunities">Explore opportunities <span>↗</span></a><a class="btn ghost" href="/contact">Request sourcing help <span>→</span></a></div>
 
         <div class="hero-bottom"><span class="hero-line"></span> CONNECTING PEOPLE, PRODUCTS & POSSIBILITIES</div>
 
@@ -229,18 +229,66 @@
 
 
     <section class="intro section-pad" data-reveal>
-
-      <div><span class="section-kicker">01 / WHO WE ARE</span></div>
-
-      <div><h2>Trade should open <em>more doors.</em></h2><p>ET Import Export is a digital trade marketplace initiative by Ethioz Business Solutions PLC. We are building a practical starting point for Ethiopian suppliers, international buyers and businesses looking for cross-border sourcing opportunities.</p><a class="text-link" href="/about">Discover our story ↗</a></div>
-
+      <div class="story-visual" aria-label="Ethiopian products connecting to international markets">
+        <div class="story-pattern" aria-hidden="true"></div>
+        <div class="story-image story-image-main">
+          <img src="https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=1100&q=85" alt="Freshly roasted coffee beans, a signature Ethiopian export" loading="lazy" />
+          <span class="story-image-label">ETHIOPIAN COFFEE <span>↗</span></span>
+        </div>
+        <div class="story-image story-image-small">
+          <img src="https://images.unsplash.com/photo-1530267981375-f0de937f5f13?w=700&q=85" alt="Agricultural equipment representing international sourcing" loading="lazy" />
+        </div>
+        <div class="story-card story-card-export">
+          <span class="story-card-icon">↗</span>
+          <span><small>EXPORT OPPORTUNITY</small><strong>Coffee · Ethiopia</strong><em>Connecting to global buyers</em></span>
+        </div>
+        <div class="story-card story-card-import">
+          <span class="story-card-icon import-icon">↙</span>
+          <span><small>IMPORT SOURCING</small><strong>Machinery & equipment</strong><em>World → Ethiopia</em></span>
+        </div>
+        <div class="story-seal" aria-hidden="true"><span>ET</span><small>TRADE<br/>HUB</small></div>
+        <span class="story-spark story-spark-one" aria-hidden="true">✳</span>
+        <span class="story-spark story-spark-two" aria-hidden="true">✦</span>
+      </div>
+      <div class="story-copy">
+        <span class="section-kicker">01 / WHO WE ARE</span>
+        <h2>Trade should open <em>more doors.</em></h2>
+        <p class="story-lead">From local potential to <span>global possibility.</span></p>
+        <h3 class="amharic-heading">ኢትዮጵያን ከዓለም ገበያ ጋር እናገናኛለን!</h3>
+        <p class="amharic-body">ET Import Export የኢትዮጵያ ላኪዎችን፣ ዓለም አቀፍ ገዢዎችን እና የውጭ አገር ምርት አቅራቢዎችን የሚያገናኝ ዘመናዊ ዲጂታል የንግድ መድረክ ነው። የምርት ማስተዋወቅን፣ የንግድ አጋሮችን ማፈላለግን እና የንግድ መረጃ ልውውጥን በማቀላጠፍ የገበያ ዕድሎችን ለማስፋት ያለመ ነው።</p>
+        <p>ET Import Export is a digital trade marketplace initiative by Ethioz Business Solutions PLC. We are building a practical starting point for Ethiopian suppliers, international buyers and businesses looking for cross-border sourcing opportunities.</p>
+        <a class="text-link" href="/about">Discover our story ↗</a>
+      </div>
     </section>
 
 
 
+    <section class="editorial-feature editorial-feature-balanced" aria-label="Trade without borders">
+      <div class="editorial-content" data-reveal>
+        <span class="section-kicker">02 / THINK BEYOND BORDERS</span>
+        <h2>Local roots.<br/><em>Global reach.</em></h2>
+        <p>Discover Ethiopian exports, connect with international buyers, and source equipment from overseas suppliers — all in one marketplace.</p>
+        <div class="editorial-keywords"><span>DISCOVER ↗</span><span>CONNECT ↗</span><span>GROW ↗</span></div>
+        <a href="/signup" class="editorial-link">Join the trade community ↗</a>
+      </div>
+      <div class="trade-photo-stage" aria-label="Ethiopian coffee exports and machinery imports">
+        <div class="trade-pattern" aria-hidden="true"></div>
+        <div class="trade-photo-card trade-export-photo">
+          <img src="https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=800&q=85" alt="Coffee beans representing Ethiopian coffee exports" loading="lazy" />
+          <div class="trade-photo-caption"><span>↗ ETHIOPIAN EXPORT</span><strong>Coffee & agricultural products</strong></div>
+        </div>
+        <div class="trade-photo-card trade-import-photo">
+          <img src="https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=800&q=85" alt="Industrial machinery for international sourcing" loading="lazy" />
+          <div class="trade-photo-caption"><span>↙ INTERNATIONAL IMPORT</span><strong>Machinery & equipment</strong></div>
+        </div>
+        <div class="trade-float-info trade-float-export"><span>↗</span><div><small>EXPORT OPPORTUNITY</small><strong>Ethiopia → World</strong></div></div>
+        <div class="trade-float-info trade-float-import"><span>↙</span><div><small>IMPORT SOURCING</small><strong>World → Ethiopia</strong></div></div>
+        <div class="trade-roundel" aria-hidden="true">ET <span>↗</span></div>
+      </div>
+    </section>
     <section class="pathways section-pad">
 
-      <div class="section-title" data-reveal><span class="section-kicker">02 / TWO DIRECTIONS. ONE PLATFORM.</span><h2>Built for trade <em>in both directions.</em></h2></div>
+      <div class="section-title" data-reveal><span class="section-kicker">03 / TWO DIRECTIONS. ONE PLATFORM.</span><h2>Built for trade <em>in both directions.</em></h2></div>
 
       <div class="pathway-grid">
 
@@ -256,7 +304,7 @@
 
     <section class="services section-pad">
 
-      <div class="section-title" data-reveal><span class="section-kicker">03 / WHAT WE DO</span><h2>More than a listing.<br /><em>A way to connect.</em></h2><p>Our current marketplace helps people discover opportunities and begin trade conversations.</p></div>
+      <div class="section-title" data-reveal><span class="section-kicker">04 / WHAT WE DO</span><h2>More than a listing.<br /><em>A way to connect.</em></h2><p>Our current marketplace helps people discover opportunities and begin trade conversations.</p></div>
 
       <div class="service-grid">
 
@@ -274,9 +322,14 @@
 
 
 
-    <section id="opportunities" class="opportunities section-pad">
+    <section class="photo-ribbon" aria-label="Products and possibilities">
+  <div class="ribbon-copy"><span>FROM FARM TO FOREIGN SHELF</span><strong>Made in Ethiopia.<br/><em>Seen everywhere.</em></strong></div>
+  <div class="ribbon-photo"><img src="https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=900&q=85" alt="Colorful spices" loading="lazy"/><span>01 / AGRICULTURE</span></div>
+  <div class="ribbon-photo"><img src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=900&q=85" alt="Industrial machinery" loading="lazy"/><span>02 / INDUSTRY</span></div>
+</section>
+<section id="opportunities" class="opportunities section-pad">
 
-      <div class="market-head" data-reveal><div><span class="section-kicker">04 / MARKETPLACE PREVIEW</span><h2>Explore trade <em>opportunities.</em></h2><p>Search example products while verified listings are being developed.</p></div><a href="/sell" class="btn dark-btn">Submit a product ↗</a></div>
+      <div class="market-head" data-reveal><div><span class="section-kicker">05 / MARKETPLACE PREVIEW</span><h2>Explore trade <em>opportunities.</em></h2><p>Browse illustrative export and import products below. These are demos, not active seller offers.</p></div><a href="/sell" class="btn dark-btn">Submit a product ↗</a></div>
 
       <div class="market-tools"><label class="search-box"><span aria-hidden="true">⌕</span><input type="search" placeholder="Search coffee, equipment, spices..." aria-label="Search products" bind:value={search}/></label><div class="filter-buttons" aria-label="Filter products by trade direction"><button class:chosen={direction === 'All'} onclick={() => direction = 'All'}>All</button><button class:chosen={direction === 'Export'} onclick={() => direction = 'Export'}>Exports</button><button class:chosen={direction === 'Import'} onclick={() => direction = 'Import'}>Imports</button></div></div>
 
@@ -284,7 +337,7 @@
 
         {#each filteredProducts as product}
 
-          <article class="product-card"><div class="product-photo"><img src={product.photo} alt={product.name} loading="lazy"/><span class="product-category">{product.category}</span></div><div class="product-body"><span class="product-direction">{product.direction} opportunity</span><h3>{product.name}</h3><p>{product.description}</p><div class="product-bottom"><span>{product.origin}</span><a href={`/contact?product=${encodeURIComponent(product.name)}`} aria-label={`Inquire about ${product.name}`}>Inquire ↗</a></div></div></article>
+          <article class="product-card"><div class="product-photo"><img src={product.photo} alt={product.name} loading="lazy"/><span class="product-category">{product.category} · DEMO</span></div><div class="product-body"><span class="product-direction">{product.direction} opportunity</span><h3>{product.name}</h3><p>{product.description}</p><div class="product-bottom"><span>{product.origin}</span><a href={`/contact?product=${encodeURIComponent(product.name)}`} aria-label={`Inquire about ${product.name}`}>Inquire ↗</a></div></div></article>
 
         {:else}
 
@@ -294,7 +347,7 @@
 
       </div>
 
-      <div class="market-note">These are illustrative opportunities, not verified offers. For live submissions and reviewed listings, visit the export and import pages.</div>
+      <div class="market-note">Demo images and products are illustrative, not verified seller offers. For live submissions and reviewed listings, visit the export and import pages.</div>
 
     </section>
 
@@ -302,7 +355,7 @@
 
     <section id="how-it-works" class="how section-pad">
 
-      <div class="how-heading" data-reveal><span class="section-kicker">05 / HOW IT WORKS</span><h2>From discovery<br />to <em>real conversations.</em></h2><p>Simple steps to begin exploring international trade opportunities.</p></div>
+      <div class="how-heading" data-reveal><span class="section-kicker">06 / HOW IT WORKS</span><h2>From discovery<br />to <em>real conversations.</em></h2><p>Simple steps to begin exploring international trade opportunities.</p></div>
 
       <div class="steps"><div data-reveal><span>01</span><h3>Discover</h3><p>Explore products, suppliers and sourcing opportunities.</p></div><div data-reveal><span>02</span><h3>Inquire</h3><p>Share your product interests and business requirements.</p></div><div data-reveal><span>03</span><h3>Connect</h3><p>Our team can review inquiries and help start a business conversation.</p></div></div>
 
@@ -314,7 +367,7 @@
 
   </main>
 
-  <footer class="footer"><div class="footer-brand">ET <span>IMPORT EXPORT</span></div><div class="footer-links"><a href="/export">Export</a><a href="/import">Import</a><a href="/about">About</a><a href="/contact">Contact</a><a href="/login">Login</a></div><div class="footer-bottom"><span>© {new Date().getFullYear()} ET Import Export. All rights reserved.</span><span>A project by Ethioz Business Solutions PLC</span></div></footer>
+  <footer class="footer"><div class="footer-brand">ET <span>IMPORT EXPORT</span></div><div class="footer-links"><a href="/export">Export</a><a href="/import">Import</a><a href="/about">About</a><a href="/contact">Contact</a><a href="/login">Login</a><a href="/signup">Register</a></div><div class="footer-bottom"><span>© {new Date().getFullYear()} ET Import Export. All rights reserved.</span><span>A project by Ethioz Business Solutions PLC</span></div></footer>
 
 </div>
 
@@ -351,5 +404,158 @@
   @media(max-width:520px){.service-grid,.product-grid{grid-template-columns:1fr}.hero-art{min-height:290px}.art-caption{font-size:7px}.float-pill{transform:scale(.85)}.trust-strip{gap:12px;font-size:9px}.trust-strip b{display:none}.path-content{padding:26px}.pathway{min-height:370px}.intro h2,.section-title h2,.market-head h2,.how h2,.cta h2{font-size:39px}.footer-links{gap:16px}}
 
   @media(prefers-reduced-motion:reduce){:global(html){scroll-behavior:auto}.site \*{animation:none!important;transition:none!important}}
+
+
+  /* Bilingual homepage and login dropdown */
+  .hero-amharic{font-family:"Noto Sans Ethiopic","Nyala",sans-serif;font-size:clamp(19px,2.5vw,31px);line-height:1.55;color:#d5f0b4;margin:12px 0 14px;font-weight:750}
+  .hero-amharic-desc{font-family:"Noto Sans Ethiopic","Nyala",sans-serif;line-height:1.9;font-size:clamp(14px,1.2vw,17px);max-width:620px}
+  .amharic-heading{font-family:"Noto Sans Ethiopic","Nyala",sans-serif;color:#236b49;font-size:clamp(19px,2.2vw,27px);line-height:1.5;margin:16px 0}
+  .amharic-body{font-family:"Noto Sans Ethiopic","Nyala",sans-serif;line-height:2!important;font-size:16px}
+  .login-menu{position:relative;align-self:center;z-index:30}
+  .login-menu summary{cursor:pointer;list-style:none;white-space:nowrap;font-weight:750}
+  .login-menu summary::-webkit-details-marker{display:none}
+  .login-options{position:absolute;right:0;top:calc(100% + 12px);min-width:240px;background:#fff;border:1px solid #dce8dd;border-radius:12px;box-shadow:0 16px 36px #102d2026;padding:8px;display:grid;gap:2px;z-index:50}
+  .login-options a{display:block!important;padding:12px!important;border-radius:8px;color:#164c35!important;font-size:13px;text-decoration:none}
+  .login-options a:hover{background:#edf6ec}
+  @media(max-width:900px){.login-menu{width:100%;align-self:stretch}.login-menu summary{padding:10px 0}.login-options{position:static;min-width:0;box-shadow:none;margin:8px 0}.hero-amharic{font-size:22px}}
+  @media(prefers-reduced-motion:reduce){[data-reveal]{transition:none!important;animation:none!important}}
+    /* Your existing CSS ends above this line */
+
+  /* WHO WE ARE — TRADE ANIMATION */
+
+
+  /* WHO WE ARE — editorial animated collage. Hero globe styles are unchanged. */
+  .intro.section-pad{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:center;gap:clamp(36px,6vw,100px);overflow:hidden}
+  .story-visual{position:relative;min-width:0;width:100%;height:clamp(420px,44vw,565px);isolation:isolate}
+  .story-pattern{position:absolute;inset:3% 4% 3% 0;border-radius:48% 48% 30% 30%;background:radial-gradient(circle at 40% 40%,#e1eddb 0%,#f4f5ed 62%,transparent 72%);z-index:-2}
+  .story-pattern::after{content:'';position:absolute;inset:5%;border:1px dashed #93b9a1;border-radius:50%;animation:story-spin 38s linear infinite}
+  .story-image{position:absolute;overflow:hidden;box-shadow:0 24px 55px #153a2928;background:#dce5d8}
+  .story-image img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .7s ease}
+  .story-visual:hover .story-image img{transform:scale(1.055)}
+  .story-image-main{left:8%;top:8%;width:69%;height:71%;border-radius:180px 180px 30px 30px;transform:rotate(-3deg);animation:story-breathe 7s ease-in-out infinite}
+  .story-image-main img{filter:saturate(.95) contrast(1.04)}
+  .story-image-small{right:0;bottom:3%;width:40%;height:39%;border-radius:100px 100px 24px 24px;border:7px solid #f6f7f1;transform:rotate(6deg);animation:story-breathe-small 8s ease-in-out infinite}
+  .story-image-label{position:absolute;left:18px;bottom:20px;right:18px;display:flex;justify-content:space-between;align-items:center;padding:12px 15px;background:#ffffffeb;color:#173e2b;border-radius:9px;font-size:10px;font-weight:900;letter-spacing:.1em}
+  .story-image-label span{font-size:20px}
+  .story-card{position:absolute;z-index:3;display:flex;align-items:center;gap:11px;width:max-content;max-width:70%;padding:13px 16px;border:1px solid #e4eee6;border-radius:16px;background:#ffffffef;box-shadow:0 15px 38px #183b2827;backdrop-filter:blur(12px);animation:story-float 5s ease-in-out infinite}
+  .story-card-export{top:6%;right:-2%}
+  .story-card-import{bottom:9%;left:0;animation-delay:-2.5s}
+  .story-card-icon{display:grid;place-items:center;flex:none;width:39px;height:39px;border-radius:12px;background:#e3f2e5;color:#226d44;font-size:24px;font-weight:900}
+  .story-card-icon.import-icon{background:#fff0d8;color:#a76b14}
+  .story-card span:last-child{display:flex;flex-direction:column;gap:3px}
+  .story-card small{font-size:8px;letter-spacing:.12em;font-weight:900;color:#5d8b6c}
+  .story-card strong{font-size:12px;color:#163b2a}
+  .story-card em{font-style:normal;font-size:10px;color:#698074}
+  .story-seal{position:absolute;left:0;bottom:22%;z-index:2;width:88px;height:88px;border-radius:50%;background:#154b34;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 12px 32px #173e2a35;transform:rotate(-12deg)}
+  .story-seal span{font-size:28px;font-weight:900;line-height:1}.story-seal small{font-size:8px;line-height:1.1;letter-spacing:.13em;text-align:center;margin-top:4px}
+  .story-spark{position:absolute;color:#d9a83d;font-size:35px;animation:story-twinkle 4s ease-in-out infinite}.story-spark-one{right:7%;top:32%}.story-spark-two{left:4%;top:2%;font-size:24px;animation-delay:-2s}
+  .story-copy{min-width:0}.story-copy .section-kicker{display:inline-block;margin-bottom:18px}.story-copy h2{font-size:clamp(38px,4.5vw,72px);line-height:1.05;letter-spacing:-.055em;margin:0 0 18px;color:#193e2e}.story-copy h2 em{color:#5e9f69;font-style:normal}
+  .story-lead{font-size:clamp(17px,1.7vw,23px);font-weight:700;line-height:1.3;color:#244c36;margin:0 0 25px}.story-lead span{color:#68a36f}
+  .story-copy .amharic-heading{margin-top:0}.story-copy p{max-width:640px}.story-copy .text-link{display:inline-block;margin-top:12px}
+  @keyframes story-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-15px)}}
+  @keyframes story-breathe{0%,100%{transform:rotate(-3deg) translateY(0)}50%{transform:rotate(-2deg) translateY(-9px)}}
+  @keyframes story-breathe-small{0%,100%{transform:rotate(6deg) translateY(0)}50%{transform:rotate(4deg) translateY(9px)}}
+  @keyframes story-spin{to{transform:rotate(360deg)}}
+  @keyframes story-twinkle{0%,100%{opacity:.4;transform:scale(.8)}50%{opacity:1;transform:scale(1.2)}}
+  @media(max-width:900px){.intro.section-pad{grid-template-columns:1fr;gap:30px}.story-visual{max-width:550px;margin:0 auto;height:480px}.story-copy h2{font-size:clamp(38px,8vw,62px)}}
+  @media(max-width:520px){.story-visual{height:350px}.story-card{padding:9px;gap:7px;max-width:66%}.story-card-icon{width:30px;height:30px;font-size:18px}.story-card strong{font-size:10px}.story-card small{font-size:7px}.story-card em{font-size:8px}.story-seal{width:65px;height:65px}.story-seal span{font-size:21px}.story-image-small{border-width:4px}.story-image-label{font-size:8px;padding:8px}}
+  @media(prefers-reduced-motion:reduce){.story-image-main,.story-image-small,.story-card,.story-spark,.story-pattern::after{animation:none}}
+
+
+/* FULL HOMEPAGE EDITORIAL REDESIGN — original globe styles are untouched */
+.section-pad{padding-top:110px;padding-bottom:110px}
+.section-kicker{font-size:11px;font-weight:900;letter-spacing:.22em}
+.section-title h2,.market-head h2,.how-heading h2{font-size:clamp(48px,6.3vw,90px);line-height:1;letter-spacing:-.065em}
+.intro h2{font-size:clamp(44px,5.2vw,75px);letter-spacing:-.06em}
+.header{box-shadow:0 1px 0 #173e2b10;position:relative;z-index:20}
+.hero h1{letter-spacing:-.075em}
+.trust-strip{border-block:1px solid #b7cbb8}
+.trust-strip b{font-size:23px;animation:brand-spin 15s linear infinite}
+@keyframes brand-spin{to{transform:rotate(360deg)}}
+.editorial-feature{display:grid;grid-template-columns:1.05fr .95fr;min-height:650px;background:#dce8d8;overflow:hidden}
+.editorial-content{padding:clamp(40px,7vw,110px);display:flex;flex-direction:column;justify-content:center;align-items:flex-start;position:relative}
+.editorial-content:after{content:"✳";position:absolute;right:6%;top:6%;font-size:130px;color:#a7c5a8;opacity:.45;animation:brand-spin 28s linear infinite}
+.editorial-content h2{position:relative;z-index:1;margin:24px 0 28px;font-size:clamp(62px,7.2vw,115px);line-height:.91;letter-spacing:-.08em;color:#173b2a}
+.editorial-content h2 em{font-style:normal;color:#4d9664}
+.editorial-content>p{font-size:18px;line-height:1.8;max-width:490px;color:#476653}
+.editorial-keywords{display:flex;flex-wrap:wrap;gap:8px;margin:25px 0 42px}
+.editorial-keywords span{border:1px solid #a1bca6;border-radius:100px;padding:10px 16px;font-size:10px;letter-spacing:.12em;font-weight:900}
+.editorial-link{font-size:15px;font-weight:900;text-decoration:none;border-bottom:2px solid #173b2a;padding-bottom:11px}
+.pathways{background:#153e2e;color:white}
+.pathways .section-kicker{color:#b6d4b2}
+.pathways .section-title h2{color:white}
+.pathways .section-title h2 em{color:#c0d89e}
+.pathway-grid{gap:25px}
+.pathway{min-height:560px;border-radius:22px;isolation:isolate}
+.pathway:before{content:"↗";position:absolute;right:25px;top:20px;z-index:3;width:52px;height:52px;border:1px solid #ffffff9c;border-radius:50%;display:grid;place-items:center;color:white;font-size:24px;transition:transform .3s}
+.pathway:hover:before{transform:rotate(45deg)}
+.pathway img{transition:transform .8s}
+.pathway:hover img{transform:scale(1.09)}
+.path-content h3{font-size:clamp(35px,4vw,62px);letter-spacing:-.05em}
+.services{position:relative;overflow:hidden;background:#f6f2e9}
+.services:before{content:"ET / 04";position:absolute;top:10px;right:4%;font-size:clamp(100px,18vw,270px);font-weight:900;letter-spacing:-.1em;color:#dce6d6;pointer-events:none}
+.services .section-title,.services .service-grid{position:relative;z-index:1}
+.service-card{border-radius:20px;min-height:360px;position:relative;overflow:hidden;transition:transform .35s,box-shadow .35s}
+.service-card:after{content:"✳";position:absolute;bottom:-60px;right:-25px;font-size:170px;color:#e4efe2;pointer-events:none}
+.service-card>*{position:relative;z-index:1}
+.service-card:hover{transform:translateY(-12px);box-shadow:0 24px 60px #173b2a1b}
+.photo-ribbon{min-height:470px;display:grid;grid-template-columns:1.1fr .9fr .9fr;gap:12px;padding:16px;background:#f0c95e;overflow:hidden}
+.ribbon-copy{padding:clamp(28px,5vw,85px);display:flex;flex-direction:column;justify-content:center}
+.ribbon-copy>span{font-size:11px;letter-spacing:.2em;font-weight:900;color:#35533d;margin-bottom:35px}
+.ribbon-copy>strong{font-size:clamp(42px,5vw,78px);letter-spacing:-.075em;line-height:1;color:#1b422f}
+.ribbon-copy em{font-style:normal;color:white}
+.ribbon-photo{position:relative;min-height:440px;overflow:hidden;border-radius:13px}
+.ribbon-photo img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;transition:transform .8s}
+.ribbon-photo:hover img{transform:scale(1.1)}
+.ribbon-photo:after{content:"";position:absolute;inset:50% 0 0;background:linear-gradient(transparent,#0009)}
+.ribbon-photo span{position:absolute;z-index:1;bottom:22px;left:22px;color:white;font-size:11px;font-weight:900;letter-spacing:.16em}
+.opportunities{position:relative;overflow:hidden;background:#f5f8f2}
+.opportunities:before{content:"TRADE / ET";position:absolute;top:10px;right:3%;font-size:clamp(80px,14vw,220px);font-weight:900;letter-spacing:-.09em;color:#e6eee2;white-space:nowrap;pointer-events:none}
+.opportunities>*{position:relative;z-index:1}
+.product-card{overflow:hidden;border-radius:20px;transition:transform .35s,box-shadow .35s}
+.product-card:hover{transform:translateY(-10px);box-shadow:0 24px 45px #173b2a1b}
+.product-photo{overflow:hidden}
+.product-photo img{transition:transform .65s}
+.product-card:hover .product-photo img{transform:scale(1.1)}
+.how{background:#e5efe1}
+.how .steps>div{border-radius:18px;transition:transform .3s}
+.how .steps>div:hover{transform:translateY(-7px)}
+.cta{position:relative;overflow:hidden;background:radial-gradient(circle at 90% 0,#397b52 0,transparent 44%),#123b2b}
+.cta:before{content:"✳";position:absolute;right:-40px;top:-130px;font-size:430px;color:#ffffff0a;pointer-events:none;animation:brand-spin 60s linear infinite}
+.cta>*{position:relative;z-index:1}
+@media(max-width:1000px){.editorial-feature{grid-template-columns:1fr 1fr;min-height:560px}.editorial-content{padding:50px 36px}.photo-ribbon{grid-template-columns:1fr 1fr}.ribbon-copy{grid-column:1/-1;padding:40px 25px}.ribbon-photo{min-height:300px}}
+@media(max-width:700px){.section-pad{padding-top:75px;padding-bottom:75px}.editorial-feature{grid-template-columns:1fr}.editorial-content{padding:65px 7%}.editorial-content h2{font-size:clamp(55px,13vw,84px)}.photo-ribbon{grid-template-columns:1fr 1fr;gap:9px;padding:9px}.ribbon-copy{padding:45px 18px 30px}.ribbon-photo{min-height:230px}.pathway{min-height:430px}}
+@media(max-width:440px){.photo-ribbon{grid-template-columns:1fr}.ribbon-photo{min-height:230px}.ribbon-copy{grid-column:auto}}
+@media(prefers-reduced-motion:reduce){.trust-strip b,.cta:before,.editorial-content:after{animation:none}}
+
+/* Compact, balanced international trade showcase */
+.editorial-feature-balanced{grid-template-columns:1fr 1fr;min-height:540px;align-items:center;background:#dce8d8}
+.editorial-feature-balanced .editorial-content{padding:clamp(38px,5vw,78px);min-width:0}
+.editorial-feature-balanced .editorial-content h2{font-size:clamp(48px,5.2vw,84px);line-height:.97;margin:22px 0}
+.editorial-feature-balanced .editorial-content>p{font-size:16px;line-height:1.7}
+.editorial-feature-balanced .editorial-content:after{font-size:80px;right:4%}
+.trade-photo-stage{position:relative;min-width:0;height:510px;margin:22px 42px 22px 0;border-radius:28px;background:radial-gradient(circle at 50% 50%,#eef5e8 0%,#bfd6bd 100%);isolation:isolate;overflow:hidden}
+.trade-pattern{position:absolute;inset:25px;border:2px dashed #79a98980;border-radius:50%;animation:brand-spin 38s linear infinite}
+.trade-photo-card{position:absolute;overflow:hidden;border:7px solid #fff;border-radius:22px;box-shadow:0 18px 40px #133b2d26;background:#fff;transition:transform .4s;z-index:2}
+.trade-photo-card:hover{transform:translateY(-10px) rotate(0deg)}
+.trade-photo-card img{width:100%;height:75%;display:block;object-fit:cover}
+.trade-export-photo{width:55%;height:64%;left:8%;top:10%;transform:rotate(-5deg)}
+.trade-import-photo{width:45%;height:52%;right:7%;bottom:8%;transform:rotate(6deg)}
+.trade-photo-caption{height:25%;padding:8px 12px;display:flex;flex-direction:column;justify-content:center;gap:4px;color:#173d2b}
+.trade-photo-caption span{font-size:9px;letter-spacing:.09em;font-weight:900;color:#579666}
+.trade-photo-caption strong{font-size:clamp(10px,1vw,13px);line-height:1.2}
+.trade-float-info{position:absolute;display:flex;align-items:center;gap:9px;padding:10px 13px;background:#fff;border-radius:13px;box-shadow:0 12px 32px #133b2d28;z-index:3;animation:trade-card-hover 4.5s ease-in-out infinite}
+.trade-float-info>span{display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:#e1f0e1;color:#287447;font-size:22px}
+.trade-float-info div{display:flex;flex-direction:column;gap:3px}
+.trade-float-info small{font-size:8px;letter-spacing:.09em;font-weight:900;color:#5b9465}
+.trade-float-info strong{font-size:11px;color:#193c2c}
+.trade-float-export{top:5%;right:4%}
+.trade-float-import{bottom:5%;left:3%;animation-delay:-2s}
+.trade-roundel{position:absolute;bottom:9%;left:9%;width:67px;height:67px;border-radius:50%;display:grid;place-items:center;background:#f0c951;color:#153e2e;font-weight:900;font-size:23px;transform:rotate(-12deg);z-index:3;box-shadow:0 8px 22px #153e2e33}
+.trade-roundel span{font-size:17px}
+@keyframes trade-card-hover{0%,100%{translate:0 0}50%{translate:0 -9px}}
+@media(max-width:900px){.editorial-feature-balanced{grid-template-columns:1fr}.editorial-feature-balanced .editorial-content{padding:60px 7% 25px}.trade-photo-stage{height:440px;margin:20px 7% 55px}}
+@media(max-width:480px){.trade-photo-stage{height:350px;margin:15px 5% 45px}.trade-photo-card{border-width:5px}.trade-export-photo{width:59%}.trade-import-photo{width:48%}.trade-float-info{padding:7px;gap:5px}.trade-float-info strong{font-size:9px}.trade-float-info small{font-size:7px}.trade-float-info>span{width:27px;height:27px;font-size:17px}.trade-roundel{width:48px;height:48px;font-size:16px}}
+@media(prefers-reduced-motion:reduce){.trade-pattern,.trade-float-info{animation:none}}
 
 </style>

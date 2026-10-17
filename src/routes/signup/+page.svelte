@@ -1,14 +1,22 @@
+
 <script>
   let { form } = $props();
 
-  let accountType = $state('exporter');
+let accountType = $state('exporter');
+  let accountLabel = $derived(
+    accountType === 'exporter'
+      ? 'Exporter'
+      : accountType === 'international_supplier'
+        ? 'International Supplier'
+        : 'Buyer'
+  );
 </script>
 
 <svelte:head>
-  <title>Supplier Sign Up | ET Import Export</title>
+  <title>Create Trade Account | ET Import Export</title>
   <meta
     name="description"
-    content="Create a supplier account on ET Import Export."
+    content="Register as an Ethiopian exporter, international buyer, or international supplier."
   />
 </svelte:head>
 
@@ -17,7 +25,12 @@
     <a class="brand" href="/">ET Import Export</a>
 
     <h1>Create your trade account</h1>
-<p>Register as an Ethiopian Exporter or International Buyer.</p>
+
+    <p>
+      Join our international trade platform to export from
+      Ethiopia, buy Ethiopian products, or supply products
+      to the Ethiopian market.
+    </p>
 
     {#if form?.success}
       <div class="success" role="status">
@@ -34,17 +47,49 @@
       {/if}
 
       <form method="POST">
-      <label for="accountType">Register as</label>
+        <label for="accountType">Register as</label>
 
-<select
-  id="accountType"
-  name="accountType"
-  bind:value={accountType}
-  required
->
-  <option value="exporter">Ethiopian Exporter</option>
-  <option value="buyer">International Buyer</option>
-</select>
+        <select
+          id="accountType"
+          name="accountType"
+          bind:value={accountType}
+          required
+        >
+          <option value="exporter">
+            Ethiopian Exporter
+          </option>
+          <option value="buyer">
+            International Buyer
+          </option>
+          <option value="international_supplier">
+            International Supplier (Sell to Ethiopia)
+          </option>
+        </select>
+
+        <div class="account-info">
+          {#if accountType === 'exporter'}
+            <strong>Ethiopian Exporter</strong>
+            <p>
+              Register your Ethiopian business, submit
+              verification documents, and list products
+              for international buyers.
+            </p>
+          {:else if accountType === 'international_supplier'}
+            <strong>International Supplier</strong>
+            <p>
+              Register your foreign company, complete
+              business verification, and offer products
+              to Ethiopian importers.
+            </p>
+          {:else}
+            <strong>International Buyer</strong>
+            <p>
+              Discover Ethiopian products and connect
+              with exporters to request quotations.
+            </p>
+          {/if}
+        </div>
+
         <label for="fullName">Your full name</label>
         <input
           id="fullName"
@@ -56,47 +101,54 @@
           required
         />
 
-<label for="companyName">
-  {accountType === 'exporter'
-    ? 'Export business name'
-    : 'Buying company name'}
-</label>
+        <label for="companyName">
+          {accountType === 'exporter'
+            ? 'Export business name'
+            : accountType === 'international_supplier'
+              ? 'International supplier company name'
+              : 'Buying company name'}
+        </label>
 
-<input
-  id="companyName"
-  name="companyName"
-  type="text"
-  maxlength="150"
-  value={form?.values?.companyName ?? ''}
-  required
-/>
+        <input
+          id="companyName"
+          name="companyName"
+          type="text"
+          maxlength="150"
+          value={form?.values?.companyName ?? ''}
+          required
+        />
 
-<label for="country">Country</label>
+        <label for="country">Country</label>
 
-<input
-  id="country"
-  name="country"
-  type="text"
-  maxlength="100"
-  placeholder={accountType === 'exporter' ? 'Ethiopia' : 'Enter your country'}
-  value={form?.values?.country ?? ''}
-  required
-/>
+        <input
+          id="country"
+          name="country"
+          type="text"
+          maxlength="100"
+          placeholder={accountType === 'exporter'
+            ? 'Ethiopia'
+            : 'Enter your country'}
+          value={form?.values?.country ?? ''}
+          required
+        />
 
-<label for="phone">Phone number</label>
+        <label for="phone">Phone number</label>
 
-<input
-  id="phone"
-  name="phone"
-  type="tel"
-  autocomplete="tel"
-  maxlength="30"
-  placeholder={accountType === 'exporter' ? '+251...' : '+...'}
-  value={form?.values?.phone ?? ''}
-  required
-/>
+        <input
+          id="phone"
+          name="phone"
+          type="tel"
+          autocomplete="tel"
+          maxlength="30"
+          placeholder={accountType === 'exporter'
+            ? '+251...'
+            : '+...'}
+          value={form?.values?.phone ?? ''}
+          required
+        />
 
         <label for="email">Email address</label>
+
         <input
           id="email"
           name="email"
@@ -108,6 +160,7 @@
         />
 
         <label for="password">Password</label>
+
         <input
           id="password"
           name="password"
@@ -118,11 +171,16 @@
           aria-describedby="password-help"
           required
         />
+
         <small id="password-help">
-          Use 12–128 characters. A long, unique passphrase works well.
+          Use 12–128 characters. A long, unique passphrase
+          works well.
         </small>
 
-        <label for="confirmPassword">Confirm password</label>
+        <label for="confirmPassword">
+          Confirm password
+        </label>
+
         <input
           id="confirmPassword"
           name="confirmPassword"
@@ -133,19 +191,21 @@
           required
         />
 
-<button type="submit">
-  Create {accountType === 'exporter' ? 'Exporter' : 'Buyer'} Account
-</button>
-</form>
+        <button type="submit">
+          Create {accountLabel} Account
+        </button>
+      </form>
 
       <p class="notice">
-        Creating an account does not mean your business is verified.
-        Product listings require approval before appearing publicly.
+        Creating an account does not mean your business
+        is verified. Business verification and product
+        listing approval are separate processes.
       </p>
     {/if}
 
     <p class="login-link">
-      Already have an account? <a href="/login">Sign in</a>
+      Already have an account?
+      <a href="/login">Sign in</a>
     </p>
 
     <a class="back" href="/">← Back to home</a>
@@ -207,8 +267,8 @@
     font-weight: 700;
   }
 
-input,
-select {
+  input,
+  select {
     width: 100%;
     padding: 13px;
     box-sizing: border-box;
@@ -217,6 +277,22 @@ select {
     background: white;
     color: #173d32;
     font: inherit;
+  }
+
+  .account-info {
+    padding: 14px;
+    border-radius: 9px;
+    background: #edf6ef;
+    border: 1px solid #cce5d2;
+  }
+
+  .account-info strong {
+    color: #146b4c;
+  }
+
+  .account-info p {
+    margin: 8px 0 0;
+    font-size: 14px;
   }
 
   small {
@@ -238,6 +314,11 @@ select {
     text-align: center;
     text-decoration: none;
     cursor: pointer;
+  }
+
+  button:hover,
+  .button:hover {
+    background: #10583e;
   }
 
   .error,

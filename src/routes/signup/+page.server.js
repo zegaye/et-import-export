@@ -35,7 +35,7 @@ export const actions = {
     const companyName = read('companyName').trim();
     const country = read('country').trim();
     const phone = read('phone').trim();
-    const email = read('email').trim();
+    const email = read('email').trim().toLowerCase();
     const password = read('password');
     const confirmPassword = read('confirmPassword');
 
@@ -57,33 +57,61 @@ export const actions = {
       });
     }
 
-    if (!['exporter', 'buyer'].includes(accountType)) {
-      return invalid('Select Exporter or International Buyer.');
+    const allowedAccountTypes = [
+      'exporter',
+      'buyer',
+      'international_supplier'
+    ];
+
+    if (!allowedAccountTypes.includes(accountType)) {
+      return invalid('Select a valid trade account type.');
     }
 
     if (!fullName || fullName.length > 100) {
-      return invalid('Enter a valid full name (maximum 100 characters).');
+      return invalid(
+        'Enter a valid full name (maximum 100 characters).'
+      );
     }
 
     if (!companyName || companyName.length > 150) {
-      return invalid('Enter a company or business name (maximum 150 characters).');
+      return invalid(
+        'Enter a company or business name (maximum 150 characters).'
+      );
     }
 
     if (!country || country.length > 100) {
       return invalid('Enter a valid country.');
     }
 
-    if (!phone || phone.length > 30 || !/^\+?[0-9()\s.-]{7,30}$/.test(phone)) {
+    if (
+      accountType === 'exporter' &&
+      country.toLowerCase() !== 'ethiopia'
+    ) {
+      return invalid(
+        'Ethiopian Exporter accounts must select Ethiopia.'
+      );
+    }
+
+    if (
+      !phone ||
+      phone.length > 30 ||
+      !/^\+?[0-9()\s.-]{7,30}$/.test(phone)
+    ) {
       return invalid('Enter a valid phone number.');
     }
 
-    if (!email || email.length > 254 ||
-        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    if (
+      !email ||
+      email.length > 254 ||
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+    ) {
       return invalid('Enter a valid email address.');
     }
 
     if (password.length < 12 || password.length > 128) {
-      return invalid('Password must contain 12–128 characters.');
+      return invalid(
+        'Password must contain 12–128 characters.'
+      );
     }
 
     if (password !== confirmPassword) {
@@ -98,20 +126,22 @@ export const actions = {
 
     if (existingUser) redirect(303, '/dashboard');
 
-    const { data, error: signupError } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          full_name: fullName,
-          account_type: accountType,
-          company_name: companyName,
-          country,
-          phone
-        },
-        emailRedirectTo: `${event.url.origin}/auth/confirm`
-      }
-    });
+    const { data, error: signupError } =
+      await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: fullName,
+            account_type: accountType,
+            company_name: companyName,
+            country,
+            phone
+          },
+          emailRedirectTo:
+            `${event.url.origin}/auth/confirm`
+        }
+      });
 
     if (signupError) {
       console.error(
@@ -119,13 +149,17 @@ export const actions = {
         signupError.code ?? signupError.status
       );
 
-      return fail(signupError.status === 429 ? 429 : 400, {
-        success: false,
-        message: signupError.status === 429
-          ? 'Too many attempts. Please try again later.'
-          : 'Unable to register. If you already have an account, try signing in.',
-        values
-      });
+      return fail(
+        signupError.status === 429 ? 429 : 400,
+        {
+          success: false,
+          message:
+            signupError.status === 429
+              ? 'Too many attempts. Please try again later.'
+              : 'Unable to register. If you already have an account, try signing in.',
+          values
+        }
+      );
     }
 
     if (data.session) {
