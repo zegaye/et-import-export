@@ -9,6 +9,16 @@
     (product) => product.direction === 'export'
   );
 
+  /** @type {Array<{
+ * id: string;
+ * product_name: string;
+ * category: string;
+ * origin: string;
+ * quantity: string;
+ * description: string;
+ * imageUrl: string;
+ * isVerifiedExporter?: boolean;
+ * }>} */
   let approvedProducts = $derived(data.approvedProducts ?? []);
 
   let categories = $derived(
@@ -147,6 +157,11 @@
         <div class="details">
           <span>{product.category.toUpperCase()}</span>
           <h3>{product.product_name}</h3>
+          {#if product.isVerifiedExporter}
+  <div class="verified-badge">
+    ✓ Verified Exporter
+  </div>
+{/if}
           <p>Origin: {product.origin}</p>
           <p>Quantity: {product.quantity}</p>
           <p>{product.description}</p>
@@ -404,6 +419,18 @@
   .filters select,
   .filters button {
     width: 100%;
-  }
+   }
+}
+
+.verified-badge {
+  display: inline-block;
+  background: #dcfce7;
+  color: #166534;
+  border: 1px solid #86efac;
+  padding: 7px 13px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 700;
+  margin: 10px 0;
 }
 </style>

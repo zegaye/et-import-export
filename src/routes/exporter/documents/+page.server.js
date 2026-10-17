@@ -89,7 +89,7 @@ export const actions = {
     }
 
     /** @type {Record<string, string>} */
-/** @type {Record<string, string>} */
+
     const extensions = {
       'application/pdf': 'pdf',
       'image/jpeg': 'jpg',

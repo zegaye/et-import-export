@@ -1,5 +1,6 @@
 
 <script>
+  /** @type {import('./$types').PageProps} */
   let { data, form } = $props();
 
   const exporterLinks = [
@@ -38,12 +39,51 @@
     }
   ];
 
+  const documentNames = {
+    business_license: 'Business License',
+    export_license: 'Export License',
+    company_profile: 'Company Profile'
+  };
+
   let isExporter = $derived(data.accountType === 'exporter');
   let isBuyer = $derived(data.accountType === 'buyer');
 
   let links = $derived(
     isExporter ? exporterLinks : isBuyer ? buyerLinks : []
   );
+
+  let verificationStatus = $derived(
+    data.verificationStatus ?? 'pending'
+  );
+
+  let documentProgress = $derived(
+    data.documentProgress ?? []
+  );
+
+  let approvedCount = $derived(data.approvedCount ?? 0);
+  let requiredCount = $derived(data.requiredCount ?? 3);
+
+  let progressPercentage = $derived(
+    requiredCount > 0
+      ? Math.round((approvedCount / requiredCount) * 100)
+      : 0
+  );
+
+  /** @param {string} type */
+  function getDocumentName(type) {
+    return documentNames[
+      /** @type {keyof typeof documentNames} */ (type)
+    ] ?? type;
+  }
+
+  /** @param {string} status */
+  function getStatusLabel(status) {
+    if (status === 'approved') return 'Approved';
+    if (status === 'pending') return 'Under Review';
+    if (status === 'rejected') return 'Rejected';
+    if (status === 'verified') return 'Verified';
+    return 'Not Uploaded';
+  }
 </script>
 
 <svelte:head>
@@ -103,6 +143,92 @@
         </div>
       </div>
 
+      {#if isExporter}
+        <div class="verification-card">
+          <div class="verification-header">
+            <div>
+              <span class="eyebrow">EXPORTER VERIFICATION</span>
+              <h2>Company Verification</h2>
+              <p>
+                Complete the required documents to verify
+                your exporter account.
+              </p>
+            </div>
+
+            <span
+              class:verified={verificationStatus === 'verified'}
+              class="verification-badge"
+            >
+              {verificationStatus === 'verified'
+                ? '✓ Verified Exporter'
+                : verificationStatus === 'rejected'
+                  ? 'Verification Rejected'
+                  : 'Verification Pending'}
+            </span>
+          </div>
+
+          <div class="progress-heading">
+            <strong>Document Approval Progress</strong>
+            <strong>{approvedCount} of {requiredCount}</strong>
+          </div>
+
+          <div
+            class="progress-track"
+            role="progressbar"
+            aria-label="Document approval progress"
+            aria-valuemin="0"
+            aria-valuemax={requiredCount}
+            aria-valuenow={approvedCount}
+          >
+            <div
+              class="progress-fill"
+              style:width={`${progressPercentage}%`}
+            ></div>
+          </div>
+
+          <p class="progress-caption">
+            {progressPercentage}% of required documents approved
+          </p>
+
+          <div class="document-list">
+            {#each documentProgress as doc}
+              <div class="document-row">
+                <div class="document-info">
+                  <span
+                    class:done={doc.status === 'approved'}
+                    class="document-icon"
+                  >
+                    {doc.status === 'approved' ? '✓' : '○'}
+                  </span>
+
+                  <strong>{getDocumentName(doc.type)}</strong>
+                </div>
+
+                <span class={`document-status ${doc.status}`}>
+                  {getStatusLabel(doc.status)}
+                </span>
+              </div>
+            {/each}
+          </div>
+
+          {#if verificationStatus === 'verified'}
+            <p class="verified-message">
+              ✓ Your required exporter documents have been
+              approved by the platform administrator.
+            </p>
+          {:else}
+            <p class="verification-help">
+              Upload missing documents or replace rejected
+              documents to continue verification.
+            </p>
+          {/if}
+
+          <a class="upload-button" href="/exporter/documents">
+            Manage Export Documents →
+          </a>
+        </div>
+      {/if}
+
       <h2>
         {isExporter ? 'Exporter Services' : 'Buyer Services'}
       </h2>
@@ -121,9 +247,9 @@
 
         {#if isExporter}
           <p>
-            Your personal product management, buyer inquiries,
-            export documents and quotations will be added
-            in the next development phases.
+            Personal product management, buyer inquiries
+            and quotations will be added in the next
+            development phases.
           </p>
         {:else}
           <p>
@@ -240,6 +366,162 @@
     color: #52645a;
   }
 
+  .verification-card {
+    margin: 30px 0;
+    padding: 28px;
+    border: 1px solid #cde5d5;
+    border-radius: 16px;
+    background: #f9fdfa;
+  }
+
+  .verification-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+
+  .verification-header h2 {
+    margin: 10px 0;
+  }
+
+  .verification-header p {
+    color: #52645a;
+    margin-top: 0;
+  }
+
+  .verification-badge {
+    display: inline-block;
+    padding: 10px 14px;
+    border-radius: 20px;
+    background: #fff3d4;
+    color: #936200;
+    font-size: 13px;
+    font-weight: 800;
+  }
+
+  .verification-badge.verified {
+    background: #d9f5e4;
+    color: #146b4c;
+  }
+
+  .progress-heading {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 26px;
+    margin-bottom: 12px;
+  }
+
+  .progress-track {
+    height: 12px;
+    background: #dce9df;
+    border-radius: 20px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: #169c65;
+    border-radius: 20px;
+    transition: width 0.3s ease;
+  }
+
+  .progress-caption {
+    font-size: 13px;
+    color: #52645a;
+  }
+
+  .document-list {
+    margin: 24px 0;
+    border: 1px solid #dce7df;
+    border-radius: 12px;
+    overflow: hidden;
+    background: white;
+  }
+
+  .document-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    padding: 17px;
+    border-bottom: 1px solid #e8efea;
+  }
+
+  .document-row:last-child {
+    border-bottom: none;
+  }
+
+  .document-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .document-icon {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #edf2ef;
+    color: #64746a;
+    font-weight: 800;
+  }
+
+  .document-icon.done {
+    background: #d9f5e4;
+    color: #146b4c;
+  }
+
+  .document-status {
+    padding: 7px 11px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    background: #edf2ef;
+    color: #64746a;
+  }
+
+  .document-status.approved {
+    background: #d9f5e4;
+    color: #146b4c;
+  }
+
+  .document-status.pending {
+    background: #fff3d4;
+    color: #936200;
+  }
+
+  .document-status.rejected {
+    background: #ffe1df;
+    color: #a32c24;
+  }
+
+  .verification-help {
+    color: #52645a;
+    font-size: 14px;
+  }
+
+  .verified-message {
+    color: #146b4c;
+    font-weight: 700;
+  }
+
+  .upload-button {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 13px 18px;
+    border-radius: 9px;
+    background: #146b4c;
+    color: white;
+    text-decoration: none;
+    font-weight: 700;
+  }
+
   .cards {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -303,6 +585,15 @@
 
     section {
       padding: 22px;
+    }
+
+    .verification-card {
+      padding: 18px;
+    }
+
+    .document-row {
+      align-items: flex-start;
+      flex-direction: column;
     }
   }
 </style>
