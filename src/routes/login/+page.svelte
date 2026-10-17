@@ -1,3 +1,4 @@
+
 <script>
   let { form } = $props();
 </script>
@@ -12,10 +13,12 @@
     <a class="brand" href="/">ET Import Export</a>
 
     <h1>Sign in</h1>
-    <p>Access your supplier account or admin dashboard.</p>
+    <p>Access your trade account or admin dashboard.</p>
 
     {#if form?.message}
-      <div class="error" role="alert">{form.message}</div>
+      <div class="error" role="alert">
+        {form.message}
+      </div>
     {/if}
 
     <form method="POST">
@@ -38,8 +41,17 @@
         required
       />
 
+      <a class="forgot" href="/forgot-password">
+        Forgot password?
+      </a>
+
       <button type="submit">Sign in</button>
     </form>
+
+    <p class="register">
+      Don't have an account?
+      <a href="/signup">Create an account</a>
+    </p>
 
     <a class="back" href="/">← Back to home</a>
   </section>
@@ -100,6 +112,11 @@
     font: inherit;
   }
 
+  input:focus-visible {
+    outline: 2px solid #146b4c;
+    outline-offset: 2px;
+  }
+
   button {
     margin-top: 10px;
     padding: 14px;
@@ -112,6 +129,13 @@
     cursor: pointer;
   }
 
+  .forgot {
+    text-align: right;
+    color: #146b4c;
+    font-size: 14px;
+    font-weight: 700;
+  }
+
   .error {
     padding: 12px;
     background: #fff0ee;
@@ -119,9 +143,18 @@
     border-radius: 8px;
   }
 
+  .register {
+    margin-top: 24px;
+  }
+
+  .register a,
+  .back {
+    color: #146b4c;
+    font-weight: 700;
+  }
+
   .back {
     display: inline-block;
-    margin-top: 24px;
-    color: #146b4c;
+    margin-top: 14px;
   }
 </style>
