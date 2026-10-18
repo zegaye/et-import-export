@@ -6,6 +6,11 @@
    * @typedef {{
    *   assessmentScore: number | null;
    *   exportReady: boolean;
+   *   documentsVerified: boolean;
+   *   businessLicenseApproved: boolean;
+   *   exportLicenseApproved: boolean;
+   *   missingDocuments: string[];
+   *   canSubmitProduct: boolean;
    * }} SellPageData
    */
 
@@ -65,6 +70,24 @@
           Go to Export Readiness Assessment →
         </a>
       </div>
+    {:else if !data.documentsVerified}
+      <div class="message warning" role="status">
+        <h2>Business Verification Required</h2>
+        <p>You have passed your Export Readiness Assessment with a score of <strong>{data.assessmentScore}%</strong>.</p>
+        <p>Before you can register products, an administrator must approve both your Business License and Export License.</p>
+        <div class="document-checks">
+          <div class:approved={data.businessLicenseApproved}>
+            <strong>{data.businessLicenseApproved ? '✓' : '○'} Business License</strong>
+            <span>{data.businessLicenseApproved ? 'Approved' : 'Approval required'}</span>
+          </div>
+          <div class:approved={data.exportLicenseApproved}>
+            <strong>{data.exportLicenseApproved ? '✓' : '○'} Export License</strong>
+            <span>{data.exportLicenseApproved ? 'Approved' : 'Approval required'}</span>
+          </div>
+        </div>
+        <p>If you have already uploaded your documents, wait for administrator review. Rejected documents must be corrected and resubmitted.</p>
+        <a class="assessment-link" href="/dashboard">Open Exporter Dashboard →</a>
+      </div>
     {:else if form?.success}
       <div class="message success" role="status">
         <h2>Product Submitted Successfully!</h2>
@@ -76,9 +99,9 @@
 
         <a href="/sell">Register another product →</a>
       </div>
-    {:else}
+    {:else if data.canSubmitProduct}
       <div class="ready-banner">
-        <strong>✓ Export Readiness Passed</strong>
+        <strong>✓ Export Readiness Passed · Business Documents Approved</strong>
         <span>
           Assessment score: {data.assessmentScore}%
         </span>
@@ -243,6 +266,12 @@
           Submit Export Product for Review →
         </button>
       </form>
+    {:else}
+      <div class="message warning" role="status">
+        <h2>Product Registration Unavailable</h2>
+        <p>Your account is not yet eligible to submit products. Visit your dashboard to review your requirements.</p>
+        <a class="assessment-link" href="/dashboard">Open Exporter Dashboard →</a>
+      </div>
     {/if}
   </div>
 </main>
@@ -481,6 +510,33 @@
     border: 1px solid #e7cf92;
     background: #fff8e7;
     color: #70521a;
+  }
+
+  .document-checks {
+    display: grid;
+    gap: 10px;
+    margin: 20px 0;
+  }
+
+  .document-checks > div {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 13px 15px;
+    border: 1px solid #e7cf92;
+    border-radius: 9px;
+    background: #fffdf7;
+  }
+
+  .document-checks > div.approved {
+    border-color: #b9ddc4;
+    background: #eef9f1;
+    color: #205d37;
+  }
+
+  .document-checks span {
+    font-size: 13px;
   }
 
   .message.success {

@@ -50,7 +50,7 @@
 
     { number: '03', symbol: '◎', title: 'Buyer–supplier connections', description: 'Make product inquiries and begin conversations with potential trading partners.', href: '/contact', link: 'Send an inquiry' },
 
-    { number: '04', symbol: '✓', title: 'Supplier submissions', description: 'Submit product information for administrative review before publication.', href: '/sell', link: 'Submit a product' }
+    { number: '04', symbol: '✓', title: 'Verified exporter listings', description: 'Complete exporter assessment and business verification before submitting products for review.', href: '/sell', link: 'Start listing process' }
 
   ];
 
@@ -106,7 +106,7 @@
 
     <nav class:open={menuOpen} aria-label="Main navigation">
 
-      <a href="/">Home</a><a href="/export">Export</a><a href="/import">Import</a><a href="/#opportunities">Opportunities</a><a href="/about">About</a><a href="/contact">Contact</a><details class="login-menu"><summary>Login ▾</summary><div class="login-options"><a href="/login">Buyer Login</a><a href="/login">Ethiopian Exporter Login</a><a href="/login">International Supplier Login</a><a href="/signup">Create an account ↗</a><a href="/login">Admin Login</a></div></details><a class="admin-nav-link" href="/admin">⚙ Admin Dashboard</a><a class="nav-cta" href="/sell">List a product ↗</a>
+      <a href="/">Home</a><a href="/export">Export</a><a href="/import">Import</a><a href="/#opportunities">Opportunities</a><a href="/about">About</a><a href="/contact">Contact</a><details class="login-menu"><summary>Login ▾</summary><div class="login-options"><a href="/login">Buyer Login</a><a href="/login">Ethiopian Exporter Login</a><a href="/login">International Supplier Login</a><a href="/signup">Create an account ↗</a><a href="/login">Admin Login</a></div></details><a class="admin-nav-link" href="/training">📚 Training</a><a class="nav-cta" href="/sell">List a product ↗</a>
 
     </nav>
 
