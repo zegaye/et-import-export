@@ -35,11 +35,12 @@ export const actions = {
     const companyName = read('companyName').trim();
     const submittedCountry = read('country').trim();
 
-const country =
-  accountType === 'exporter' &&
-  submittedCountry.toLowerCase() === 'ethiopia'
-    ? 'Ethiopia'
-    : submittedCountry;
+    const country =
+      accountType === 'exporter' &&
+      submittedCountry.toLowerCase() === 'ethiopia'
+        ? 'Ethiopia'
+        : submittedCountry;
+
     const phone = read('phone').trim();
     const email = read('email').trim().toLowerCase();
     const password = read('password');
@@ -95,6 +96,15 @@ const country =
     ) {
       return invalid(
         'Ethiopian Exporter accounts must select Ethiopia.'
+      );
+    }
+
+    if (
+      accountType === 'international_supplier' &&
+      country.toLowerCase() === 'ethiopia'
+    ) {
+      return invalid(
+        'International Suppliers must register a business based outside Ethiopia.'
       );
     }
 

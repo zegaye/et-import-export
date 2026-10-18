@@ -106,7 +106,7 @@
 
     <nav class:open={menuOpen} aria-label="Main navigation">
 
-      <a href="/">Home</a><a href="/export">Export</a><a href="/import">Import</a><a href="/#opportunities">Opportunities</a><a href="/about">About</a><a href="/contact">Contact</a><details class="login-menu"><summary>Login ▾</summary><div class="login-options"><a href="/login">Buyer Login</a><a href="/login">Ethiopian Exporter Login</a><a href="/login">International Supplier Login</a><a href="/signup">Create an account ↗</a></div></details><a class="nav-cta" href="/sell">List a product ↗</a>
+      <a href="/">Home</a><a href="/export">Export</a><a href="/import">Import</a><a href="/#opportunities">Opportunities</a><a href="/about">About</a><a href="/contact">Contact</a><details class="login-menu"><summary>Login ▾</summary><div class="login-options"><a href="/login">Buyer Login</a><a href="/login">Ethiopian Exporter Login</a><a href="/login">International Supplier Login</a><a href="/signup">Create an account ↗</a><a href="/login">Admin Login</a></div></details><a class="admin-nav-link" href="/admin">⚙ Admin Dashboard</a><a class="nav-cta" href="/sell">List a product ↗</a>
 
     </nav>
 
@@ -558,4 +558,7 @@
 @media(max-width:480px){.trade-photo-stage{height:350px;margin:15px 5% 45px}.trade-photo-card{border-width:5px}.trade-export-photo{width:59%}.trade-import-photo{width:48%}.trade-float-info{padding:7px;gap:5px}.trade-float-info strong{font-size:9px}.trade-float-info small{font-size:7px}.trade-float-info>span{width:27px;height:27px;font-size:17px}.trade-roundel{width:48px;height:48px;font-size:16px}}
 @media(prefers-reduced-motion:reduce){.trade-pattern,.trade-float-info{animation:none}}
 
+  .admin-nav-link{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 14px;border:1px solid #2f7049;border-radius:10px;color:#205f3d;font-weight:800;text-decoration:none;white-space:nowrap;background:#e8f4e9}
+  .admin-nav-link:hover{background:#d7ecda}
+  @media(max-width:900px){.admin-nav-link{width:100%;justify-content:flex-start;margin:6px 0}}
 </style>

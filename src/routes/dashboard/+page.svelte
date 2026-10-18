@@ -1,4 +1,3 @@
-
 <script>
   /** @type {import('./$types').PageProps} */
   let { data, form } = $props();
@@ -39,6 +38,24 @@
     }
   ];
 
+  const supplierLinks = [
+    {
+      title: 'Explore Ethiopian Import Demand',
+      description: 'Browse the import marketplace for sourcing opportunities.',
+      href: '/import'
+    },
+    {
+      title: 'Submit a Supply Offer',
+      description: 'Submit your products for administrator review.',
+      href: '/sell'
+    },
+    {
+      title: 'Contact Trade Support',
+      description: 'Ask for help supplying products to Ethiopia.',
+      href: '/contact'
+    }
+  ];
+
   const documentNames = {
     business_license: 'Business License',
     export_license: 'Export License',
@@ -47,9 +64,13 @@
 
   let isExporter = $derived(data.accountType === 'exporter');
   let isBuyer = $derived(data.accountType === 'buyer');
+  let isSupplier = $derived(data.accountType === 'international_supplier');
+  let supplierAssessment = $derived(data.supplierAssessment ?? null);
+  let supplierPassed = $derived(supplierAssessment?.status === 'passed');
+  let hasTradeRole = $derived(isExporter || isBuyer || isSupplier);
 
   let links = $derived(
-    isExporter ? exporterLinks : isBuyer ? buyerLinks : []
+    isExporter ? exporterLinks : isBuyer ? buyerLinks : isSupplier ? supplierLinks : []
   );
 
   let verificationStatus = $derived(
@@ -112,7 +133,9 @@
         ? 'EXPORTER ACCOUNT'
         : isBuyer
           ? 'INTERNATIONAL BUYER ACCOUNT'
-          : 'ACCOUNT SETUP REQUIRED'}
+          : isSupplier
+            ? 'INTERNATIONAL SUPPLIER ACCOUNT'
+            : 'ACCOUNT SETUP REQUIRED'}
     </span>
 
     <h1>
@@ -123,7 +146,7 @@
       Signed in as <strong>{data.email}</strong>
     </p>
 
-    {#if isExporter || isBuyer}
+    {#if hasTradeRole}
       <div class="profile">
         <div>
           <small>Business</small>
@@ -138,7 +161,7 @@
         <div>
           <small>Account type</small>
           <strong>
-            {isExporter ? 'Exporter' : 'International Buyer'}
+            {isExporter ? 'Exporter' : isBuyer ? 'International Buyer' : 'International Supplier'}
           </strong>
         </div>
       </div>
@@ -229,8 +252,55 @@
         </div>
       {/if}
 
+      {#if isSupplier}
+        <div class="verification-card">
+          <div class="verification-header">
+            <div>
+              <span class="eyebrow">INTERNATIONAL SUPPLIER READINESS</span>
+              <h2>Assessment and Business Verification</h2>
+              <p>Complete your readiness assessment and submit business documents for administrator review.</p>
+            </div>
+            <span class="verification-badge" class:verified={verificationStatus === 'verified'}>
+              {verificationStatus === 'verified' ? '✓ Business Verified' : 'Business Verification Pending'}
+            </span>
+          </div>
+
+          <div class="supplier-status-grid">
+            <div class="supplier-status-box">
+              <small>Assessment score</small>
+              <strong class="supplier-score">{supplierAssessment ? `${supplierAssessment.score}/100` : 'Not taken'}</strong>
+              <span class:status-good={supplierPassed} class="supplier-status-text">
+                {supplierPassed ? '✓ Passed' : supplierAssessment ? 'Needs Support' : 'Assessment Required'}
+              </span>
+            </div>
+            <div class="supplier-status-box">
+              <small>Business verification</small>
+              <strong>{verificationStatus === 'verified' ? 'Verified' : verificationStatus === 'rejected' ? 'Rejected' : 'Pending'}</strong>
+              <span class="supplier-status-text">Administrator review is separate from assessment scoring.</span>
+            </div>
+          </div>
+
+          {#if !supplierAssessment}
+            <p class="verification-help">Start the readiness assessment before uploading supplier documents.</p>
+            <a class="upload-button" href="/international-supplier/assessment">Take Supplier Assessment →</a>
+          {:else if supplierPassed}
+            <p class="verification-help">
+              Your assessment is complete. {verificationStatus === 'verified'
+                ? 'Your business is marked verified.'
+                : 'You must still submit business documents and receive final administrator approval.'}
+            </p>
+            <a class="upload-button" href="/international-supplier/documents">Manage Supplier Documents →</a>
+          {:else}
+            <p class="verification-help">
+              Your assessment indicates that additional readiness support is needed. Contact our trade support team about the next steps.
+            </p>
+            <a class="upload-button" href="/contact">Contact Trade Support →</a>
+          {/if}
+        </div>
+      {/if}
+
       <h2>
-        {isExporter ? 'Exporter Services' : 'Buyer Services'}
+        {isExporter ? 'Exporter Services' : isBuyer ? 'Buyer Services' : 'International Supplier Services'}
       </h2>
 
       <div class="cards">
@@ -251,11 +321,16 @@
             and quotations will be added in the next
             development phases.
           </p>
-        {:else}
+        {:else if isBuyer}
           <p>
             Your personal RFQs, supplier quotations and
             transaction tracking will be added in the
             next development phases.
+          </p>
+        {:else}
+          <p>
+            Personal supply-offer management and inquiry tracking are planned for future phases.
+            Product submissions remain subject to administrator review.
           </p>
         {/if}
       </div>
@@ -263,8 +338,8 @@
       <div class="notice">
         <h2>Account setup required</h2>
         <p>
-          Your account does not yet have an exporter or buyer
-          profile. Please contact platform support to complete
+          Your account does not yet have a recognized trade
+          account type. Please contact platform support to complete
           your account setup.
         </p>
         <a href="/contact">Contact support →</a>
@@ -577,9 +652,48 @@
     color: #a32c24;
   }
 
+
+  .supplier-status-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    margin: 24px 0 12px;
+  }
+
+  .supplier-status-box {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 20px;
+    border: 1px solid #dce7df;
+    border-radius: 12px;
+    background: white;
+  }
+
+  .supplier-status-box strong {
+    font-size: 22px;
+  }
+
+  .supplier-status-box .supplier-score {
+    font-size: 32px;
+    color: #146b4c;
+  }
+
+  .supplier-status-text {
+    font-size: 13px;
+    color: #64746a;
+    line-height: 1.5;
+  }
+
+  .supplier-status-text.status-good {
+    color: #146b4c;
+    font-weight: 700;
+  }
+
   @media (max-width: 750px) {
     .profile,
-    .cards {
+    .cards,
+    .supplier-status-grid {
       grid-template-columns: 1fr;
     }
 

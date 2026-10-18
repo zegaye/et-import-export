@@ -9,6 +9,12 @@ const REQUIRED_DOCUMENTS = [
   'company_profile'
 ];
 
+const ACCOUNT_TYPES = [
+  'exporter',
+  'buyer',
+  'international_supplier'
+];
+
 /** @type {import('./$types').PageServerLoad} */
 export async function load(event) {
   event.setHeaders({
@@ -34,27 +40,33 @@ export async function load(event) {
 
   const metadata = user.user_metadata ?? {};
 
-  // Get the actual account information from Supabase.
-  const { data: profile, error: profileError } = await supabase
-    .from('trade_profiles')
-    .select(
-      'company_name, full_name, account_type, verification_status'
-    )
-    .eq('user_id', user.id)
-    .maybeSingle();
+  const { data: profile, error: profileError } =
+    await supabase
+      .from('trade_profiles')
+      .select(
+        'company_name, full_name, account_type, verification_status'
+      )
+      .eq('user_id', user.id)
+      .maybeSingle();
 
   if (profileError) {
-    console.error('Dashboard profile:', profileError.code);
+    console.error('Dashboard profile:', profileError);
     error(500, 'Unable to load your account profile.');
   }
 
+  const rawAccountType =
+    profile?.account_type ??
+    metadata.account_type;
+
   const accountType =
-    profile?.account_type === 'exporter' ||
-    profile?.account_type === 'buyer'
-      ? profile.account_type
+    typeof rawAccountType === 'string' &&
+    ACCOUNT_TYPES.includes(rawAccountType)
+      ? rawAccountType
       : 'unassigned';
 
   const isExporter = accountType === 'exporter';
+  const isInternationalSupplier =
+    accountType === 'international_supplier';
 
   /** @type {{type: string, status: string}[]} */
   let documentProgress = [];
@@ -71,21 +83,14 @@ export async function load(event) {
         .order('created_at', { ascending: false });
 
     if (documentsError) {
-      console.error(
-        'Dashboard documents:',
-        documentsError.code
-      );
-
+      console.error('Dashboard documents:', documentsError);
       error(500, 'Unable to load your export documents.');
     }
 
     documentProgress = REQUIRED_DOCUMENTS.map((type) => {
-      const matchingDocuments = (documents ?? []).filter(
-        (doc) => doc.document_type === type
-      );
+      const matchingDocuments = (documents ?? [])
+        .filter((doc) => doc.document_type === type);
 
-      // An approved document remains valid even if the
-      // exporter later uploads another pending document.
       const approvedDocument = matchingDocuments.find(
         (doc) => doc.review_status === 'approved'
       );
@@ -102,6 +107,39 @@ export async function load(event) {
     approvedCount = documentProgress.filter(
       (doc) => doc.status === 'approved'
     ).length;
+  }
+
+  /** @type {{
+   *   score: number,
+   *   status: string,
+   *   attempt_number: number,
+   *   submitted_at: string
+   * } | null}
+   */
+  let supplierAssessment = null;
+
+  if (isInternationalSupplier) {
+    const { data: assessment, error: assessmentError } =
+      await supabase
+        .from('international_supplier_assessments')
+        .select(
+          'score, status, attempt_number, submitted_at'
+        )
+        .eq('supplier_id', user.id)
+        .order('attempt_number', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+    if (assessmentError) {
+      console.error(
+        'Dashboard supplier assessment:',
+        assessmentError
+      );
+
+      error(500, 'Unable to load supplier assessment.');
+    }
+
+    supplierAssessment = assessment;
   }
 
   return {
@@ -133,7 +171,9 @@ export async function load(event) {
 
     approvedCount,
 
-    requiredCount: REQUIRED_DOCUMENTS.length
+    requiredCount: REQUIRED_DOCUMENTS.length,
+
+    supplierAssessment
   };
 }
 

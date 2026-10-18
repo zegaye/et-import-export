@@ -1,61 +1,140 @@
 
-import { fail, redirect } from '@sveltejs/kit';
+import { fail, redirect, error } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 import { createClient } from '@supabase/supabase-js';
 import { createAuthClient } from '$lib/server/auth.js';
+/**
+ * @typedef {import('@supabase/supabase-js').SupabaseClient} SupabaseClient
+ */
+function getAdminClient() {
+  if (!env.SUPABASE_URL || !env.SUPABASE_SECRET_KEY) {
+    throw error(503, 'Product registration is temporarily unavailable.');
+  }
+
+  return createClient(
+    env.SUPABASE_URL,
+    env.SUPABASE_SECRET_KEY,
+    {
+      auth: {
+        persistSession: false,
+        autoRefreshToken: false
+      }
+    }
+  );
+}
+
+/**
+ * @param {import('@sveltejs/kit').RequestEvent} event
+ */
+async function getExporter(event) {
+  const authClient = createAuthClient(event);
+
+  const {
+    data: { user },
+    error: authError
+  } = await authClient.auth.getUser();
+
+  if (authError || !user) {
+    return null;
+  }
+
+  const supabase = getAdminClient();
+
+  const { data: profile, error: profileError } = await supabase
+    .from('trade_profiles')
+    .select('user_id, account_type')
+    .eq('user_id', user.id)
+    .maybeSingle();
+
+  if (profileError) {
+    console.error('Profile error:', profileError.message);
+    throw error(500, 'Unable to verify exporter profile.');
+  }
+
+  return {
+    user,
+    profile,
+    supabase
+  };
+}
+
+/**
+ * @param {SupabaseClient} supabase
+ * @param {string} userId
+ */
+async function getAssessment(supabase, userId) {
+  const { data, error: assessmentError } = await supabase
+    .from('exporter_assessments')
+    .select('score, status')
+    .eq('exporter_id', userId)
+    .order('attempt_number', { ascending: false })
+    .limit(1);
+
+  if (assessmentError) {
+    console.error('Assessment error:', assessmentError.message);
+    throw error(500, 'Unable to check export readiness.');
+  }
+
+  const latest = data?.[0] ?? null;
+
+  return {
+    score: latest?.score ?? null,
+    passed:
+      latest?.status === 'passed' &&
+      Number(latest.score) >= 60
+  };
+}
+
+/** @type {import('./$types').PageServerLoad} */
+export async function load(event) {
+  event.setHeaders({
+    'cache-control': 'private, no-store'
+  });
+
+  const exporter = await getExporter(event);
+
+  if (!exporter) {
+    redirect(303, '/login');
+  }
+
+  if (exporter.profile?.account_type !== 'exporter') {
+    throw error(403, 'An Ethiopian Exporter account is required.');
+  }
+
+  const assessment = await getAssessment(
+    exporter.supabase,
+    exporter.user.id
+  );
+
+  return {
+    assessmentScore: assessment.score,
+    exportReady: assessment.passed
+  };
+}
 
 /** @type {import('./$types').Actions} */
 export const actions = {
   default: async (event) => {
-    const authClient = createAuthClient(event);
+    const exporter = await getExporter(event);
 
-    const {
-      data: { user },
-      error: authError
-    } = await authClient.auth.getUser();
-
-    // Require an authenticated account before submitting products.
-    if (authError || !user) {
+    if (!exporter) {
       redirect(303, '/login');
     }
 
-    if (!env.SUPABASE_URL || !env.SUPABASE_SECRET_KEY) {
-      console.error('Supabase environment variables are missing.');
-
-      return fail(500, {
-        message: 'Submissions are temporarily unavailable.'
-      });
-    }
-
-    const supabase = createClient(
-      env.SUPABASE_URL,
-      env.SUPABASE_SECRET_KEY,
-      {
-        auth: {
-          persistSession: false,
-          autoRefreshToken: false
-        }
-      }
-    );
-
-    // Confirm the logged-in account belongs to an exporter.
-    const { data: profile, error: profileError } = await supabase
-      .from('trade_profiles')
-      .select('user_id, account_type')
-      .eq('user_id', user.id)
-      .maybeSingle();
-
-    if (profileError) {
-      console.error('Profile lookup failed:', profileError.message);
-
-      return fail(500, {
-        message: 'Unable to verify your account.'
-      });
-    }
-
-    if (!profile || profile.account_type !== 'exporter') {
+    if (exporter.profile?.account_type !== 'exporter') {
       return fail(403, {
-        message: 'An exporter account is required to submit products.'
+        message: 'An exporter account is required.'
+      });
+    }
+
+    const { user, supabase } = exporter;
+
+    const assessment = await getAssessment(supabase, user.id);
+
+    if (!assessment.passed) {
+      return fail(403, {
+        message:
+          'You must pass the Export Readiness Assessment with at least 60% before submitting products.'
       });
     }
 
@@ -66,7 +145,7 @@ export const actions = {
       seller_name: String(data.get('sellerName') ?? '').trim(),
       phone: String(data.get('phone') ?? '').trim(),
       product_name: String(data.get('productName') ?? '').trim(),
-      direction: String(data.get('direction') ?? '').trim(),
+      direction: 'export',
       category: String(data.get('category') ?? '').trim(),
       origin: String(data.get('location') ?? '').trim(),
       quantity: String(data.get('quantity') ?? '').trim(),
@@ -85,15 +164,13 @@ export const actions = {
 
     const invalidField = Object.entries(limits).some(
       ([field, limit]) =>
-        !submission[field] || submission[field].length > limit
+        !submission[field] ||
+        submission[field].length > limit
     );
 
-    if (
-      invalidField ||
-      !['export', 'import'].includes(submission.direction)
-    ) {
+    if (invalidField) {
       return fail(400, {
-        message: 'Please complete every field with valid information.'
+        message: 'Please complete all required fields correctly.'
       });
     }
 
@@ -101,7 +178,7 @@ export const actions = {
 
     if (typeof photo === 'string' && photo) {
       return fail(400, {
-        message: 'Please choose a valid photo file.'
+        message: 'Please select a valid photo.'
       });
     }
 
@@ -112,7 +189,7 @@ export const actions = {
 
     if (hasPhoto && photo.size > 2 * 1024 * 1024) {
       return fail(400, {
-        message: 'The photo must be no larger than 2 MB.'
+        message: 'Photo must be smaller than 2 MB.'
       });
     }
 
@@ -133,23 +210,21 @@ export const actions = {
         (value, index) => bytes[index] === value
       );
 
-      const validJpeg =
-        photo.type === 'image/jpeg' && isJpeg;
-
-      const validPng =
-        photo.type === 'image/png' && isPng;
+      const validJpeg = photo.type === 'image/jpeg' && isJpeg;
+      const validPng = photo.type === 'image/png' && isPng;
 
       if (!validJpeg && !validPng) {
         return fail(400, {
-          message: 'Please upload a JPG or PNG photo.'
+          message: 'Only JPG and PNG photos are allowed.'
         });
       }
 
       const extension = validJpeg ? 'jpg' : 'png';
-      const contentType = validJpeg ? 'image/jpeg' : 'image/png';
+      const contentType = validJpeg
+        ? 'image/jpeg'
+        : 'image/png';
 
-      imagePath =
-        `submissions/${crypto.randomUUID()}.${extension}`;
+      imagePath = `submissions/${crypto.randomUUID()}.${extension}`;
 
       const { error: uploadError } = await supabase.storage
         .from('product-photos')
@@ -159,15 +234,14 @@ export const actions = {
         });
 
       if (uploadError) {
-        console.error('Photo upload failed:', uploadError.message);
+        console.error('Upload failed:', uploadError.message);
 
         return fail(500, {
-          message: 'We could not upload your photo. Please try again.'
+          message: 'Photo upload failed. Please try again.'
         });
       }
     }
 
-    // Save the product with its authenticated exporter ID.
     const { error: saveError } = await supabase
       .from('product_submissions')
       .insert({
@@ -184,23 +258,21 @@ export const actions = {
           .remove([imagePath]);
 
         if (cleanupError) {
-          console.error(
-            'Photo cleanup failed:',
-            cleanupError.message
-          );
+          console.error('Photo cleanup failed:', cleanupError.message);
         }
       }
 
-      console.error('Could not save submission:', saveError.message);
+      console.error('Submission failed:', saveError.message);
 
       return fail(500, {
-        message: 'We could not save your submission. Please try again.'
+        message: 'Could not save your product. Please try again.'
       });
     }
 
     return {
       success: true,
-      message: 'Your product was submitted for review.'
+      message:
+        'Your export product has been submitted for administrator review.'
     };
   }
 };
