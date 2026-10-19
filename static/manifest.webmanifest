@@ -1,6 +1,6 @@
 {
   "name": "ET Import Export",
-  "short_name": "ET Trade",
+"short_name": "ET Import Export",
   "description": "Ethiopian import, export, marketplace and trade training platform",
   "start_url": "/",
   "scope": "/",
