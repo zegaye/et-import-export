@@ -6,28 +6,53 @@
    * Category illustrations are displayed ONLY when a listing has no real photo.
    * They must never be presented as photos of the actual product.
    * Place the ten WebP files in static/images/products/.
-   * @param {{name?: string; category?: string; description?: string}} product
-   */
-  function categoryIllustration(product) {
-    const text = `${product.category ?? ''} ${product.name ?? ''}`.toLowerCase();
-    /** @type {Array<[RegExp, string]>} */
-    const rules = [
-      [/coffee|arabica|robusta|ቡና/, 'coffee'],
-      [/sesame|sesam|ሰሊጥ/, 'sesame'],
-      [/pulse|lentil|chickpea|bean|pea|fava|haricot/, 'pulses'],
-      [/spice|turmeric|ginger|pepper|chili|chilli|cardamom|korarima/, 'spices'],
-      [/flower|rose|floriculture/, 'flowers'],
-      [/textile|fabric|garment|cotton|apparel|clothing|woven/, 'textiles'],
-      [/leather|hide|skin|shoe|footwear|handbag/, 'leather'],
-      [/oilseed|oil seed|niger|groundnut|peanut|castor|sunflower|nut/, 'oilseeds'],
-      [/mineral|metal|gold|ore|tantalum|lithium|gemstone|marble/, 'minerals'],
-      [/fruit|vegetable|avocado|mango|banana|tomato|produce|horticultur/, 'produce']
+ * @param {{id?: string | number; name?: string; category?: string; description?: string}} product   */
+ 
+function categoryIllustration(product) {
+  const text = `${product.category ?? ''} ${product.name ?? ''}`.toLowerCase();
+
+  // Different illustrative images for coffee listings.
+  if (/coffee|arabica|robusta|ቡና/.test(text)) {
+    const coffeeImages = [
+      '/images/products/coffee.webp',
+      '/images/products/coffee-green.webp',
+      '/images/products/coffee-processing.webp'
     ];
-    for (const [pattern, filename] of rules) {
-      if (pattern.test(text)) return `/images/products/${filename}.webp`;
+
+    // Use a stable product identifier to select an image.
+    const key = String(product.id ?? product.name ?? '');
+    let hash = 0;
+
+    for (const char of key) {
+      hash = (hash * 31 + char.charCodeAt(0)) >>> 0;
     }
-    return '/images/products/produce.webp';
+
+    return coffeeImages[hash % coffeeImages.length];
   }
+/** @type {[RegExp, string][]} */
+
+  const rules = [
+    [/sesame|ሰሊጥ/, 'sesame'],
+    [/pulse|lentil|chickpea|bean|fava|haricot/, 'pulses'],
+    [/spice|turmeric|ginger|pepper|chili|chilli|cardamom|korarima/, 'spices'],
+    [/flower|rose|floriculture/, 'flowers'],
+    [/textile|fabric|garment|cotton|apparel|clothing|woven/, 'textiles'],
+    [/leather|hide|skin|shoe|footwear|handbag/, 'leather'],
+    [/oilseed|oil seed|niger|groundnut|peanut|castor|sunflower|nut/, 'oilseeds'],
+    [/mineral|metal|gold|ore|tantalum|lithium|gemstone|marble/, 'minerals'],
+    [/fruit|vegetable|avocado|mango|banana|tomato|produce|horticultur/, 'produce']
+     // Keep the remaining rules unchanged
+  ];
+
+  for (const [pattern, filename] of rules) {
+    if (pattern.test(text)) {
+      return `/images/products/${filename}.webp`;
+    }
+  }
+
+  return '/images/products/produce.webp';
+}
+
 
   let search = $state('');
   let category = $state('All');
