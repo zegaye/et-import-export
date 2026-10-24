@@ -1,0 +1,90 @@
+﻿
+> my-app@0.0.1 check
+> svelte-kit sync && svelte-check --tsconfig ./jsconfig.json
+
+node.exe : The following Vite config options will be overridden by SvelteKit:
+At line:1 char:1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (The following V...n by SvelteKit::String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  - root
+Loading svelte-check in workspace: c:\Users\4kaz\Desktop\beginning_langchain_js\main.py\my-app-2
+Getting Svelte diagnostics...
+
+c:\Users\4kaz\Desktop\beginning_langchain_js\main.py\my-app-2\[32msrc\routes\api\ai-chat\+server.js[39m:41:20
+[31mError[39m: 'user' is possibly 'null'. 
+[36m    .from('ai_conversations').select('id').eq('id', conversationId)
+    .eq('user_id', [35muser[36m.id).maybeSingle();
+  if (conversationError) return json({ error: 'Unable to verify conversation.' }, { status: 500 });[39m
+
+c:\Users\4kaz\Desktop\beginning_langchain_js\main.py\my-app-2\[32msrc\routes\api\ai-chat\+server.js[39m:47:58
+[31mError[39m: 'user' is possibly 'null'. 
+[36m    .from('ai_messages').select('role, content, created_at, id')
+    .eq('conversation_id', conversationId).eq('user_id', [35muser[36m.id)
+    .order('created_at', { ascending: false }).order('id', { ascending: false })[39m
+
+c:\Users\4kaz\Desktop\beginning_langchain_js\main.py\my-app-2\[32msrc\routes\api\ai-chat\+server.js[39m:88:56
+[31mError[39m: 'err' is of type 'unknown'. 
+[36m    console.error('Gemini request failed:', err);
+    const status = err instanceof Error && 'status' in [35merr[36m ? Number(err.status) : 500;
+    return json({ error: status === 429 ? 'AI usage limit reached. Try again later.' : 'Unable to contact Gemini AI.' },[39m
+
+c:\Users\4kaz\Desktop\beginning_langchain_js\main.py\my-app-2\[32msrc\routes\api\ai-chat\+server.js[39m:88:69
+[31mError[39m: 'err' is of type 'unknown'. 
+[36m    console.error('Gemini request failed:', err);
+    const status = err instanceof Error && 'status' in err ? Number([35merr[36m.status) : 500;
+    return json({ error: status === 429 ? 'AI usage limit reached. Try again later.' : 'Unable to contact Gemini AI.' },[39m
+
+c:\Users\4kaz\Desktop\beginning_langchain_js\main.py\my-app-2\[32msrc\routes\api\ai-chat\+server.js[39m:96:49
+[31mError[39m: 'user' is possibly 'null'. 
+[36m  const { error: saveError } = await supabase.from('ai_messages').insert([
+    { conversation_id: conversationId, user_id: [35muser[36m.id, role: 'user', content: message.trim() },
+    { conversation_id: conversationId, user_id: user.id, role: 'assistant', content: reply }[39m
+
+c:\Users\4kaz\Desktop\beginning_langchain_js\main.py\my-app-2\[32msrc\routes\api\ai-chat\+server.js[39m:97:49
+[31mError[39m: 'user' is possibly 'null'. 
+[36m    { conversation_id: conversationId, user_id: user.id, role: 'user', content: message.trim() },
+    { conversation_id: conversationId, user_id: [35muser[36m.id, role: 'assistant', content: reply }
+  ]);[39m
+
+c:\Users\4kaz\Desktop\beginning_langchain_js\main.py\my-app-2\[32msrc\routes\api\ai-chat\+server.js[39m:105:45
+[31mError[39m: 'user' is possibly 'null'. 
+[36m    .update({ updated_at: new Date().toISOString() })
+    .eq('id', conversationId).eq('user_id', [35muser[36m.id);
+      if (updateError) {[39m
+
+c:\Users\4kaz\Desktop\beginning_langchain_js\main.py\my-app-2\[32msrc\routes\api\ai-chat\+server.js[39m:115:7
+[31mError[39m: Cannot find name 'updateError'. 
+[36m}
+  if ([35mupdateError[36m) console.error('Update conversation timestamp:', updateError);
+  return json({ reply, conversation_id: conversationId });[39m
+
+c:\Users\4kaz\Desktop\beginning_langchain_js\main.py\my-app-2\[32msrc\routes\api\ai-chat\+server.js[39m:115:68
+[31mError[39m: Cannot find name 'updateError'. 
+[36m}
+  if (updateError) console.error('Update conversation timestamp:', [35mupdateError[36m);
+  return json({ reply, conversation_id: conversationId });[39m
+
+c:\Users\4kaz\Desktop\beginning_langchain_js\main.py\my-app-2\[32msrc\routes\api\ai-chat\+server.js[39m:116:17
+[31mError[39m: No value exists in scope for the shorthand property 'reply'. Either declare one or provide an initializer. 
+[36m  if (updateError) console.error('Update conversation timestamp:', updateError);
+  return json({ [35mreply[36m, conversation_id: conversationId });
+}[39m
+
+c:\Users\4kaz\Desktop\beginning_langchain_js\main.py\my-app-2\[32msrc\routes\ai-assistant\+page.svelte[39m:194:25
+[31mError[39m: Parameter 'event' implicitly has an 'any' type. (js)
+[36m    instance.onend = () => { listening = false; };
+    instance.onerror = ([35mevent[36m) => {
+      listening = false;[39m
+
+c:\Users\4kaz\Desktop\beginning_langchain_js\main.py\my-app-2\[32msrc\routes\ai-assistant\+page.svelte[39m:200:26
+[31mError[39m: Parameter 'event' implicitly has an 'any' type. (js)
+[36m    };
+    instance.onresult = ([35mevent[36m) => {
+      const transcript = event.results?.[0]?.[0]?.transcript?.trim();[39m
+
+====================================
+[31msvelte-check found 12 errors and 0 warnings in 2 files
+[39m

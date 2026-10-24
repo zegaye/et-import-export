@@ -6,6 +6,14 @@
   let loadingHistory = $state(true);
   let errorMessage = $state('');
   let language = $state('auto');
+  let autoSpeak = $state(true);
+  let listening = $state(false);
+  let speaking = $state(false);
+  let voiceNotice = $state('');
+  /** @type {any} */
+  let recognition;
+  /** @type {SpeechSynthesisUtterance | undefined} */
+  let utterance;
   let conversationId = $state('');
   let sidebarOpen = $state(false);
   /** @type {{id:string,title:string,updated_at:string}[]} */
@@ -23,7 +31,13 @@
     'ከኢትዮጵያ ቡና ለመላክ ምን ያስፈልጋል?'
   ];
 
-  onMount(() => { void loadConversations(); });
+  onMount(() => {
+    void loadConversations();
+    return () => {
+      if (recognition) recognition.abort();
+      if (typeof window !== 'undefined') window.speechSynthesis?.cancel();
+    };
+  });
 
   /** @param {Response} response */
   async function readResponse(response) {
@@ -65,6 +79,7 @@
   }
 
   function newChat() {
+    stopSpeaking();
     if (loading) return;
     conversationId = '';
     messages = [];
@@ -105,6 +120,7 @@
         body: JSON.stringify({ conversation_id: conversationId, message, language })
       }));
       messages = [...messages, { role: 'assistant', text: result.reply }];
+      if (autoSpeak) speakText(result.reply);
       await loadConversations();
       await scrollToBottom();
     } catch (error) {
@@ -114,6 +130,84 @@
       errorMessage = error instanceof Error ? error.message : 'Something went wrong.';
       if (!createdId) conversationId = originalId;
     } finally { loading = false; }
+  }
+
+  function stopSpeaking() {
+    if (typeof window === 'undefined') return;
+    window.speechSynthesis?.cancel();
+    speaking = false;
+  }
+
+  /** @param {string} text */
+  function speakText(text) {
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
+      voiceNotice = 'Audio playback is not supported in this browser.';
+      return;
+    }
+    stopSpeaking();
+    const locale = language === 'am' ? 'am-ET' : language === 'om' ? 'om-ET' : 'en-US';
+    const voices = window.speechSynthesis.getVoices();
+    const matchingVoice = voices.find((voice) => voice.lang.toLowerCase() === locale.toLowerCase())
+      ?? voices.find((voice) => voice.lang.toLowerCase().startsWith(locale.slice(0, 2).toLowerCase() + '-'));
+    if (language === 'om' && !matchingVoice) {
+      voiceNotice = 'Afaan Oromoo speech voice is unavailable in this browser. The answer remains available as text; a dedicated Oromo voice service is needed.';
+      return;
+    }
+    if (language === 'am' && !matchingVoice) {
+      voiceNotice = 'An Amharic voice is unavailable in this browser. The answer remains available as text.';
+      return;
+    }
+    const speech = new SpeechSynthesisUtterance(text);
+    speech.lang = locale;
+    if (matchingVoice) speech.voice = matchingVoice;
+    speech.rate = 0.92;
+    speech.onstart = () => { speaking = true; };
+    speech.onend = () => { speaking = false; };
+    speech.onerror = () => { speaking = false; voiceNotice = 'Speech playback failed. Try a different browser or voice.'; };
+    utterance = speech;
+    voiceNotice = '';
+    window.speechSynthesis.speak(speech);
+  }
+
+  function startListening() {
+    if (typeof window === 'undefined' || listening || loading || loadingHistory) return;
+    const browser = /** @type {any} */ (window);
+    const SpeechRecognition = browser.SpeechRecognition ?? browser.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      voiceNotice = 'This browser does not support speech recognition. Try Chrome or Edge, or type your question.';
+      return;
+    }
+    if (language === 'auto') {
+      voiceNotice = 'Select Afaan Oromoo, Amharic, or English before recording.';
+      return;
+    }
+    stopSpeaking();
+    voiceNotice = '';
+    const instance = new SpeechRecognition();
+    recognition = instance;
+    instance.lang = language === 'om' ? 'om-ET' : language === 'am' ? 'am-ET' : 'en-US';
+    instance.interimResults = false;
+    instance.continuous = false;
+    instance.maxAlternatives = 1;
+    instance.onstart = () => { listening = true; };
+    instance.onend = () => { listening = false; };
+   /** @param {{ error?: string }} event */
+instance.onerror = (event) => {
+      listening = false;
+      voiceNotice = event.error === 'not-allowed'
+        ? 'Microphone permission denied. Allow microphone access in your browser.'
+        : `Speech recognition failed (${event.error}). Afaan Oromoo may not be supported by your browser.`;
+    };
+/** @param {{ results?: ArrayLike<ArrayLike<{ transcript?: string }>> }} event */
+instance.onresult = (event) => {
+      const transcript = event.results?.[0]?.[0]?.transcript?.trim();
+      if (transcript) {
+        input = transcript;
+        voiceNotice = 'Voice transcribed. Check the text, then press Send.';
+      }
+    };
+    try { instance.start(); }
+    catch { voiceNotice = 'Unable to start microphone recording.'; listening = false; }
   }
 
   /** @param {KeyboardEvent} event */
@@ -190,8 +284,12 @@
       <div class="toolbar">
         <div class="language-picker"><label for="language">Language</label>
           <select id="language" bind:value={language} disabled={loading}>
-            <option value="auto">Auto Detect</option><option value="en">English</option><option value="am">አማርኛ</option>
+            <option value="auto">Auto Detect (text)</option><option value="en">English</option><option value="am">አማርኛ</option><option value="om">Afaan Oromoo</option>
           </select>
+        </div>
+        <div class="voice-controls">
+          <label class="auto-speak"><input type="checkbox" bind:checked={autoSpeak} /> 🔊 Speak answers automatically</label>
+          <button type="button" class="stop-voice" onclick={stopSpeaking} disabled={!speaking}>Stop audio</button>
         </div>
         <div class="memory-status"><span class="status-dot"></span> Supabase History Enabled</div>
       </div>
@@ -204,7 +302,11 @@
         {#each messages as item, index (index)}
           <div class:user={item.role === 'user'} class:assistant={item.role === 'assistant'} class="message-row">
             <div class="avatar">{item.role === 'assistant' ? '✦' : 'U'}</div>
-            <div class="bubble">{item.text}</div>
+            <div class="bubble">{item.text}
+              {#if item.role === 'assistant'}
+                <button type="button" class="replay" onclick={() => speakText(item.text)} aria-label="Listen to AI answer">🔊 Listen again</button>
+              {/if}
+            </div>
           </div>
         {/each}
         {#if loading}<div class="message-row assistant"><div class="avatar ai-avatar">✦</div><div class="bubble thinking">ET Trade AI is thinking...</div></div>{/if}
@@ -215,8 +317,10 @@
         </div></section>
       {/if}
       {#if errorMessage}<div class="error" role="alert">{errorMessage}</div>{/if}
+      {#if voiceNotice}<div class="voice-notice" role="status">{voiceNotice}</div>{/if}
       <form class="composer" onsubmit={(event) => { event.preventDefault(); void sendMessage(); }}>
         <textarea bind:value={input} onkeydown={handleKeydown} placeholder="Ask ET Trade AI... / ጥያቄዎን ይጻፉ..." rows="2" maxlength="3000" disabled={loading || loadingHistory} aria-label="Your trade question"></textarea>
+        <button class="mic" type="button" onclick={startListening} disabled={loading || loadingHistory || listening} aria-label="Speak your question">{listening ? '🎙 Listening…' : '🎤 Speak'}</button>
         <button class="send" type="submit" disabled={loading || loadingHistory || !input.trim()}>{loading ? 'Wait...' : 'Send ➤'}</button>
       </form>
       <footer>Conversations are saved to your account. Verify official trade requirements before making business decisions.</footer>
@@ -249,14 +353,14 @@
   .close-sidebar { display:none; border:0; background:transparent; font-size:18px; }
   .toolbar { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; padding:14px 24px; border-bottom:1px solid #e5edf2; background:#f8fbfc; }
   .language-picker { display:flex; align-items:center; gap:10px; } .language-picker label { font-size:13px; color:#536b7a; }
-  select { padding:9px; border:1px solid #ccd9e1; border-radius:8px; background:white; color:#173247; }
+  select { padding:9px; border:1px solid #ccd9e1; border-radius:8px; background:white; color:rgb(45, 165, 115); }
   .memory-status { display:flex; align-items:center; gap:7px; color:#087e68; font-size:12px; font-weight:bold; }
   .status-dot { width:8px; height:8px; background:#16a085; border-radius:50%; }
   .intro { padding:26px 20px 12px; text-align:center; } .eyebrow { font-size:11px; color:#087e68; font-weight:bold; letter-spacing:1.5px; }
   h2 { margin:12px 0; font-size:clamp(22px,4vw,29px); } .intro p { font-size:14px; color:#65798a; line-height:1.6; }
   .messages { height:380px; overflow-y:auto; padding:20px; display:flex; flex-direction:column; gap:17px; }
   .message-row { display:flex; align-items:flex-start; gap:10px; } .message-row.user { flex-direction:row-reverse; }
-  .avatar { flex-shrink:0; width:34px; height:34px; border-radius:50%; display:grid; place-items:center; background:#dce9ff; color:#1d4ed8; font-weight:bold; }
+  .avatar { flex-shrink:0; width:34px; height:34px; border-radius:50%; display:grid; place-items:center; background:#dce9ff; color:rgb(17, 223, 44); font-weight:bold; }
   .ai-avatar,.assistant .avatar { background:#dcf6eb; color:#087e68; }
   .bubble { max-width:80%; background:#f0f5f8; border-radius:15px; padding:14px 17px; line-height:1.75; font-size:14px; white-space:pre-wrap; overflow-wrap:anywhere; }
   .user .bubble { background:#087e68; color:white; } .thinking { color:#64748b; font-style:italic; }
@@ -270,6 +374,12 @@
   textarea:focus { outline:2px solid #0e967d; border-color:transparent; }
   .send { background:#087e68; color:white; border:0; border-radius:10px; padding:0 20px; font-weight:bold; }
   footer { padding:0 18px 18px; color:#8395a3; font-size:11px; text-align:center; line-height:1.6; }
+  .voice-controls { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .auto-speak { font-size:12px; display:flex; gap:7px; align-items:center; }
+  .stop-voice,.replay { background:#e7f4ee; color:#086e59; border:1px solid #c5e5d5; border-radius:8px; padding:6px 10px; }
+  .replay { display:block; margin-top:10px; font-size:12px; }
+  .mic { background:#dcefe8; color:#075d4c; border:0; border-radius:10px; padding:0 12px; font-weight:bold; }
+  .voice-notice { margin:10px 20px; padding:12px; border-radius:9px; background:#fff8df; color:#785b00; font-size:13px; }
   @media(max-width:850px) { .layout { display:block; } .sidebar { display:none; position:fixed; z-index:20; top:10px; left:10px; bottom:10px; width:min(320px,calc(100vw - 20px)); overflow-y:auto; min-height:0; box-shadow:0 10px 45px #102f4655; } .sidebar.open { display:block; } .menu,.close-sidebar { display:block; } }
   @media(max-width:600px) { .page { padding:8px; } .header,.toolbar { padding:14px; } .identity p { font-size:10px; } .messages { padding:12px; height:370px; } .bubble { max-width:85%; } .suggestion-grid { grid-template-columns:1fr; } .composer { padding:12px; } .send { padding:0 14px; } }
 </style>
